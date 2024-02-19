@@ -1,0 +1,35 @@
+{
+    "name": "alexandre-daubois/phpkl",
+    "type": "library",
+    "description": "Apple PKL language implementation in PHP",
+    "keywords": ["pkl", "apple", "pickle", "language", "interpreter"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexandre Daubois",
+            "email": "alex.daubois@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.2"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": { "Phpkl\\": "src", "Phpkl\\Tests\\": "tests" }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5.10",
+        "symfony/var-dumper": "^7.0"
+    }
+}
