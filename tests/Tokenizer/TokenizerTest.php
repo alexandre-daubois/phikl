@@ -96,4 +96,35 @@ PKL;
         $this->assertSame(TokenType::Identifier, $tokens[1]->type);
         $this->assertSame('App.Config', $tokens[1]->value);
     }
+
+    public function testTokenizeRemovesComments(): void
+    {
+        $source = <<<PKL
+// Assign the host
+host = "localhost"
+
+/// then the port
+/// port = 8080
+
+/*
+ * This is a multiline comment
+ * and should be removed.
+ *
+ * module App.Config, this should not be found!
+ */
+PKL;
+
+        $tokens = (new Tokenizer())->tokenize($source);
+
+        $this->assertCount(3, $tokens);
+
+        $this->assertSame(TokenType::Identifier, $tokens[0]->type);
+        $this->assertSame('host', $tokens[0]->value);
+
+        $this->assertSame(TokenType::Symbol, $tokens[1]->type);
+        $this->assertSame('=', $tokens[1]->value);
+
+        $this->assertSame(TokenType::StringLiteral, $tokens[2]->type);
+        $this->assertSame('"localhost"', $tokens[2]->value);
+    }
 }

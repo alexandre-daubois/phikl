@@ -32,6 +32,7 @@ class Tokenizer
 
         $tokens = [];
 
+        $code = $this->removeComments($code);
         foreach ($patterns as $pattern => $type) {
             if ($type === TokenType::Blank || $type === TokenType::NewLine) {
                 continue;
@@ -67,5 +68,14 @@ class Tokenizer
             self::RESERVED_KEYWORDS,
             array_map(static fn($type) => $type->value, PropertyType::cases())
         );
+    }
+
+    private function removeComments(string $code): string
+    {
+        // single line comments
+        $code = preg_replace('/\/\/.*\n/', '', $code);
+
+        // multi line comments
+        return preg_replace('/\/\*.*?\*\//s', '', $code);
     }
 }
