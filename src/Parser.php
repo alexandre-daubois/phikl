@@ -77,7 +77,12 @@ class Parser
 
     private function parseAssignment(string $identifierName): AssignmentNode
     {
-        $value = $this->consume([TokenType::StringLiteral, TokenType::Number, TokenType::OtherBaseNumber]);
+        $value = $this->consume([
+            TokenType::StringLiteral,
+            TokenType::Number,
+            TokenType::OtherBaseNumber,
+            TokenType::NumberWithSeparator,
+        ]);
 
         if ($value->type === TokenType::OtherBaseNumber) {
             $value->value = match (substr($value->value, 0, 2)) {
@@ -86,6 +91,8 @@ class Parser
                 '0o' => octdec(substr($value->value, 2)),
                 default => throw new \Exception("Unexpected token: {$value->value}"),
             };
+        } elseif ($value->type === TokenType::NumberWithSeparator) {
+            $value->value = (int) str_replace('_', '', $value->value);
         }
 
         return new AssignmentNode(

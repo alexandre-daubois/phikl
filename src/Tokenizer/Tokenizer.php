@@ -27,6 +27,7 @@ class Tokenizer
             '"[^"]*"' => TokenType::StringLiteral,
             '\b\d+\b' => TokenType::Number,
             '\b(?:0x[0-9a-fA-F]+|0b[01]+|0o[0-7]+)\b' => TokenType::OtherBaseNumber,
+            '\b(?:\d{1,3}(?:_\d{3})+|\d+)\b' => TokenType::NumberWithSeparator,
             '\n' => TokenType::NewLine,
             '\s' => TokenType::Blank,
         ];

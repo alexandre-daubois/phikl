@@ -13,8 +13,11 @@ enum TokenType
     case Symbol;
     case Identifier;
     case StringLiteral;
+
     case Number;
     case OtherBaseNumber;
+    case NumberWithSeparator;
+
     case NewLine;
     case Blank;
 }

@@ -177,4 +177,24 @@ PKL;
         $this->assertSame(TokenType::OtherBaseNumber, $tokens[11]->type);
         $this->assertSame('0o755', $tokens[11]->value);
     }
+
+    public function testTokenizeNumberWithSeparator(): void
+    {
+        $source = <<<PKL
+num1 = 123_456_789
+PKL;
+
+        $tokens = (new Tokenizer())->tokenize($source);
+
+        $this->assertCount(3, $tokens);
+
+        $this->assertSame(TokenType::Identifier, $tokens[0]->type);
+        $this->assertSame('num1', $tokens[0]->value);
+
+        $this->assertSame(TokenType::Symbol, $tokens[1]->type);
+        $this->assertSame('=', $tokens[1]->value);
+
+        $this->assertSame(TokenType::NumberWithSeparator, $tokens[2]->type);
+        $this->assertSame('123_456_789', $tokens[2]->value);
+    }
 }

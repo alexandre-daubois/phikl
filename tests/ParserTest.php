@@ -126,4 +126,20 @@ PKL;
         $this->assertSame('num4', $nodes[3]->getName());
         $this->assertSame(0o755, $nodes[3]->getValue());
     }
+
+    public function testParseNumberWithSeparator(): void
+    {
+        $source = <<<PKL
+num1 = 1_000_000
+PKL;
+
+        $parser = new Parser();
+        $nodes = $parser->parse($source);
+
+        $this->assertCount(1, $nodes);
+
+        $this->assertInstanceOf(AssignmentNode::class, $nodes[0]);
+        $this->assertSame('num1', $nodes[0]->getName());
+        $this->assertSame(1_000_000, $nodes[0]->getValue());
+    }
 }
