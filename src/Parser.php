@@ -22,8 +22,8 @@ class Parser
     public function parse(string $source): array
     {
         $this->tokens = (new Tokenizer())->tokenize($source);
-        $parsed = [];
 
+        $parsed = [];
         while ($this->current < count($this->tokens)) {
             $token = $this->tokens[$this->current];
 
@@ -72,7 +72,7 @@ class Parser
         $token = $this->tokens[$this->current];
 
         if (!\in_array($token->type, $type, true)) {
-            throw new \Exception("Unexpected token: {$token->value}, expected: " . implode(', ', $type));
+            throw new \Exception("Unexpected token: {$token->value}");
         }
 
         $this->current++;

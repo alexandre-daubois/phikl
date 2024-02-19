@@ -25,7 +25,7 @@ class Tokenizer
             '(:|\[|\]|\||\{|}|,|=)' => TokenType::Symbol,
             '(?<!")[a-zA-Z_.][\w.]*\b(?!")' => TokenType::Identifier,
             '"[^"]*"' => TokenType::StringLiteral,
-            '\d+' => TokenType::Number,
+            '\b\d+\b' => TokenType::Number,
             '\n' => TokenType::NewLine,
             '\s' => TokenType::Blank,
         ];
@@ -40,8 +40,8 @@ class Tokenizer
             \preg_match_all('/'.$pattern.'/', $code, $matches, PREG_OFFSET_CAPTURE);
 
             foreach ($matches[0] as $match) {
-                if ($type === TokenType::Identifier && \in_array($match[0], self::RESERVED_KEYWORDS, true)) {
-                    // reserved keywords are not identifiers
+                if ($type === TokenType::Identifier && \in_array($match[0], $this->reservedKeywords(), true)) {
+                    // reserved keywords are not identifiers, skip them
                     continue;
                 }
 
@@ -59,5 +59,13 @@ class Tokenizer
         $values = array_map(static fn($type) => $type->value, PropertyType::cases());
 
         return '\b' . implode('\b|\b', $values) . '\b';
+    }
+
+    private function reservedKeywords(): array
+    {
+        return \array_merge(
+            self::RESERVED_KEYWORDS,
+            array_map(static fn($type) => $type->value, PropertyType::cases())
+        );
     }
 }

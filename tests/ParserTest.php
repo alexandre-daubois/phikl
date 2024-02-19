@@ -3,6 +3,8 @@
 namespace Phpkl\Tests;
 
 use Phpkl\AST\ModuleNode;
+use Phpkl\AST\PropertyNode;
+use Phpkl\AST\PropertyType;
 use Phpkl\AST\VariableNode;
 use Phpkl\Parser;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -71,5 +73,26 @@ PKL;
         $this->assertInstanceOf(VariableNode::class, $nodes[1]);
         $this->assertSame('port', $nodes[1]->getName());
         $this->assertSame(8080, $nodes[1]->getValue());
+    }
+
+    public function testParseProperty(): void
+    {
+        $source = <<<PKL
+host: String
+port: Uint16
+PKL;
+
+        $parser = new Parser();
+        $nodes = $parser->parse($source);
+
+        $node = $nodes[0];
+        $this->assertInstanceOf(PropertyNode::class, $node);
+        $this->assertSame('host', $node->getName());
+        $this->assertSame(PropertyType::String, $node->getPropertyType());
+
+        $node = $nodes[1];
+        $this->assertInstanceOf(PropertyNode::class, $node);
+        $this->assertSame('port', $node->getName());
+        $this->assertSame(PropertyType::Uint16, $node->getPropertyType());
     }
 }
