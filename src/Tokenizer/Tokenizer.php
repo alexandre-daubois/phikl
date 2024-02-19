@@ -23,9 +23,10 @@ class Tokenizer
             '\b(typealias)\b' => TokenType::TypeAlias,
             $this->getPropertyTypeTokenRegex() => TokenType::PropertyType,
             '(:|\[|\]|\||\{|}|,|=)' => TokenType::Symbol,
-            '(?<!")[a-zA-Z_.][\w.]*\b(?!")' => TokenType::Identifier,
+            '\b(?<!")[a-zA-Z_.][\w.]*\b(?!")' => TokenType::Identifier,
             '"[^"]*"' => TokenType::StringLiteral,
             '\b\d+\b' => TokenType::Number,
+            '\b(?:0x[0-9a-fA-F]+|0b[01]+|0o[0-7]+)\b' => TokenType::OtherBaseNumber,
             '\n' => TokenType::NewLine,
             '\s' => TokenType::Blank,
         ];

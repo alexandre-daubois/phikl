@@ -2,7 +2,7 @@
 
 namespace Phpkl\AST;
 
-class VariableNode extends AbstractNode
+class AssignmentNode extends AbstractNode
 {
     public function __construct(
         private string $name,

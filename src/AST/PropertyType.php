@@ -7,7 +7,7 @@ enum PropertyType: string
     case Any = 'Any'; // abstract
     case Number = 'Number'; // abstract
 
-    case Int = 'Int';
+    case Int = 'Int'; // int64
     case Float = 'Float';
     case String = 'String';
     case Null = 'Null';

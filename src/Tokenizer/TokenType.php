@@ -14,6 +14,7 @@ enum TokenType
     case Identifier;
     case StringLiteral;
     case Number;
+    case OtherBaseNumber;
     case NewLine;
     case Blank;
 }

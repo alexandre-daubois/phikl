@@ -7,6 +7,8 @@ This is a PHP binding for Apple's PKL language. It is a work in progress and is 
 
 - [x] Comments
 - [x] Numbers
+- [x] Numbers notation (binary, hexadecimal, octal)
+- [ ] Numbers with underscores
 - [x] Strings
 - [ ] Boolean
 - [ ] Durations
