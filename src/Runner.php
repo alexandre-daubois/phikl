@@ -2,7 +2,6 @@
 
 namespace Phpkl;
 
-use Phpkl\PklRunner\PklConfig;
 use Phpkl\PklRunner\PklRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

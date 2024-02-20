@@ -2,11 +2,12 @@
 
 namespace Phpkl\PklRunner;
 
+use Phpkl\Module;
 use RuntimeException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -30,7 +31,7 @@ class PklRunner
      * @param class-string<T> $toClass
      * @return T[]|T
      */
-    public function eval(string $module, string $toClass = PklConfig::class): array|object
+    public function eval(string $module, string $toClass = Module::class): array|object
     {
         $process = new Process([$this->executable, 'eval', '-f', 'json', $module]);
 
@@ -40,8 +41,12 @@ class PklRunner
             throw new RuntimeException($process->getErrorOutput());
         }
 
-        $serializer = new Serializer([new PropertyNormalizer(), new ObjectNormalizer()], [new JsonEncoder()]);
+        $serializer = new Serializer([
+            new GetSetMethodNormalizer(),
+            new ObjectNormalizer(),
+            new PropertyNormalizer()
+        ], [new JsonEncoder()]);
 
-        return $serializer->deserialize($process->getOutput(), $toClass, 'json');
+        return $serializer->deserialize(trim($process->getOutput()), $toClass, 'json');
     }
 }

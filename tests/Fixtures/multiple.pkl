@@ -1,3 +1,5 @@
+module multiple
+
 woodPigeon {
     name = "Common wood pigeon"
     diet = "Seeds"

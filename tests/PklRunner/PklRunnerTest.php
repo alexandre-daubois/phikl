@@ -2,7 +2,7 @@
 
 namespace Phpkl\Tests\PklRunner;
 
-use Phpkl\PklRunner\PklConfig;
+use Phpkl\Module;
 use Phpkl\PklRunner\PklRunner;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -20,11 +20,11 @@ class PklRunnerTest extends TestCase
         $runner = new PklRunner();
         $result = $runner->eval(__DIR__.'/../fixtures/simple.pkl');
 
-        $this->assertInstanceOf(PklConfig::class, $result);
-        $this->assertSame('Pkl: Configure your Systems in New Ways', $result->name);
-        $this->assertSame(100, $result->attendants);
-        $this->assertTrue($result->isInteractive);
-        $this->assertSame(13.37, $result->amountLearned);
+        $this->assertInstanceOf(Module::class, $result);
+        $this->assertSame('Pkl: Configure your Systems in New Ways', $result->get('name'));
+        $this->assertSame(100, $result->get('attendants'));
+        $this->assertTrue($result->get('isInteractive'));
+        $this->assertSame(13.37, $result->get('amountLearned'));
     }
 
     public function testEvalMultipleConfigFiles(): void
@@ -32,14 +32,13 @@ class PklRunnerTest extends TestCase
         $runner = new PklRunner();
         $result = $runner->eval(__DIR__.'/../fixtures/multiple.pkl');
 
-        $this->assertInstanceOf(PklConfig::class, $result);
+        $this->assertInstanceOf(Module::class, $result);
 
-        $this->assertSame('Common wood pigeon', $result->woodPigeon['name']);
-        $this->assertSame('Seeds', $result->woodPigeon['diet']);
-        $this->assertSame('Columba palumbus', $result->woodPigeon['taxonomy']['species']);
+        $this->assertSame('Common wood pigeon', $result->get('woodPigeon')->get('name'));
+        $this->assertSame('Seeds', $result->get('woodPigeon')->get('diet'));
+        $this->assertSame('Columba palumbus', $result->get('woodPigeon')->get('taxonomy')->get('species'));
 
-        $this->assertIsArray($result->stockPigeon);
-
-        $this->assertIsArray($result->dodo);
+        $this->assertInstanceOf(Module::class, $result->get('stockPigeon'));
+        $this->assertInstanceOf(Module::class, $result->get('dodo'));
     }
 }
