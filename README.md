@@ -1,4 +1,4 @@
-🥒 PHPKL - Apple's PKL binding in PHP
+🥒 PHPKL - Apple's Pkl Bridge for PHP
 =====================================
 
 [![PHPUnit](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml/badge.svg)](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml)
@@ -142,7 +142,7 @@ use Phpkl\Pkl;
 $user = Pkl::eval('config/user.pkl', User::class)['myUser'];
 ```
 
-## The `PklProperty` attribute
+## The `PklProperty` Attribute
 
 You can use the `PklProperty` attribute to specify the name of the property in the PKL file. This is useful when the
 property name in the PKL file is different from the property name in the PHP class. Let's take the following PKL code:
