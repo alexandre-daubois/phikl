@@ -56,8 +56,35 @@ $pkl = new Pkl();
 $module = $pkl->evaluate('config/simple.pkl');
 
 // you can then interact with the module
-echo $module->name; // Pkl: Configure your Systems in New Ways
-echo $module->attendants; // 100
-echo $module->isInteractive; // true
-echo $module->amountLearned; // 13.37
+echo $module->get('name'); // Pkl: Configure your Systems in New Ways
+echo $module->get('attendants'); // 100
+echo $module->get('isInteractive'); // true
+echo $module->get('amountLearned'); // 13.37
+```
+
+This also works with nested modules:
+
+```pkl
+/// config/nested.pkl
+
+woodPigeon {
+    name = "Common wood pigeon"
+    diet = "Seeds"
+    taxonomy {
+        species = "Columba palumbus"
+    }
+}
+```
+
+```php
+use Phpkl\Pkl;
+
+// instantiate the Pkl wrapper
+$pkl = new Pkl();
+$module = $pkl->evaluate('config/nested.pkl');
+
+// you can then interact with the module
+echo $module->get('woodPigeon')->get('name'); // Common wood pigeon
+echo $module->get('woodPigeon')->get('diet'); // Seeds
+echo $module->get('woodPigeon')->get('taxonomy')->get('species'); // Columba palumbus
 ```
