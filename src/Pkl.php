@@ -21,7 +21,7 @@ class Pkl
      *
      * @return T[]|T
      */
-    public static function eval(string $module, string $toClass = Module::class): array|object
+    public static function eval(string $module, string $toClass = PklModule::class): array|object
     {
         Pkl::initExecutable();
 
