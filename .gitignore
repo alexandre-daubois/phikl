@@ -6,3 +6,7 @@
 /phpunit.xml
 
 composer.lock
+
+.idea
+vendor
+.php-cs-fixer.cache

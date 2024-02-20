@@ -42,7 +42,7 @@ if (!defined('LOCAL_COMPOSER_INSTALL')) {
 
 require LOCAL_COMPOSER_INSTALL;
 
-use Phpkl\Runner;
+use Phpkl\Internal\Command\Runner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

@@ -1,9 +1,7 @@
 <?php
 
-namespace Phpkl\PklRunner;
+namespace Phpkl;
 
-use Phpkl\Module;
-use RuntimeException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -12,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class PklRunner
+class Pkl
 {
     private string $executable;
 
@@ -21,7 +19,7 @@ class PklRunner
         $this->executable = $_ENV['PKL_CLI_BIN'] ?? $_SERVER['PKL_CLI_BIN'] ?? 'vendor/bin/pkl';
 
         if (!is_executable($this->executable)) {
-            throw new RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl --download` command.');
+            throw new \RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl --download` command.');
         }
     }
 
@@ -29,6 +27,7 @@ class PklRunner
      * @template T of object
      *
      * @param class-string<T> $toClass
+     *
      * @return T[]|T
      */
     public function eval(string $module, string $toClass = Module::class): array|object
@@ -38,13 +37,13 @@ class PklRunner
         try {
             $process->mustRun();
         } catch (ProcessFailedException) {
-            throw new RuntimeException($process->getErrorOutput());
+            throw new \RuntimeException($process->getErrorOutput());
         }
 
         $serializer = new Serializer([
             new GetSetMethodNormalizer(),
             new ObjectNormalizer(),
-            new PropertyNormalizer()
+            new PropertyNormalizer(),
         ], [new JsonEncoder()]);
 
         return $serializer->deserialize(trim($process->getOutput()), $toClass, 'json');

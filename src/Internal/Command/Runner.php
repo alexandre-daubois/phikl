@@ -1,13 +1,17 @@
 <?php
 
-namespace Phpkl;
+namespace Phpkl\Internal\Command;
 
-use Phpkl\PklRunner\PklRunner;
+use Phpkl\Internal\PklDownloader;
+use Phpkl\Pkl;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class Runner
+/**
+ * @internal
+ */
+final class Runner
 {
     public static function run(InputInterface $input, OutputInterface $output): int
     {
@@ -18,13 +22,12 @@ class Runner
             if (!$pickleDownloader->alreadyDownloaded($input->getOption('location')) && $input->getOption('download')) {
                 $io->comment('Downloading Pkl CLI...');
 
-                $pickleDownloader->download($input->getOption('location'), $io);
+                $pickleDownloader->download($io, $input->getOption('location'));
+            } else {
+                $io->success(sprintf('Pkl CLI is already installed in %s.', $input->getOption('location')));
             }
-
-            $runner = new PklRunner();
-            dump($runner->eval(__DIR__.'/../tests/fixtures/simple.pkl'));
         } catch (\Exception $e) {
-            $io->error("Pkl failed: ".$e->getMessage());
+            $io->error('Pkl failed: '.$e->getMessage());
 
             return 1;
         }

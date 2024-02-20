@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl;
+namespace Phpkl\Internal;
 
 use Phpkl\Exception\PklCliAlreadyDownloadedException;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -8,7 +8,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class PklDownloader
+/**
+ * @internal
+ */
+final class PklDownloader
 {
     private const PKL_CLI_VERSION = '0.25.2';
     private HttpClientInterface $httpClient;
@@ -23,7 +26,7 @@ class PklDownloader
         return file_exists($location.'/pkl');
     }
 
-    public function download(string $location = 'vendor/bin', SymfonyStyle $io = null): void
+    public function download(SymfonyStyle $io, string $location = 'vendor/bin'): void
     {
         if ($this->alreadyDownloaded($location)) {
             throw new PklCliAlreadyDownloadedException('Pkl CLI is already installed.');
@@ -33,18 +36,16 @@ class PklDownloader
             throw new \RuntimeException('32-bit systems are not supported by Pkl CLI.');
         }
 
-        if ($io !== null) {
-            $progressBar = new ProgressBar($io);
-            // set the progress bar format to display how many megabytes are downloaded
-            $progressBar->setFormat('verbose');
-        }
+        $progressBar = new ProgressBar($io);
+        // set the progress bar format to display how many megabytes are downloaded
+        $progressBar->setFormat('verbose');
 
         $downloadUrl = $this->buildDownloadUrl();
         $response = $this->httpClient->request('GET', $downloadUrl, [
-            'on_progress' => $io === null ? null : function ($dlNow, $dlSize) use ($progressBar) {
+            'on_progress' => function ($dlNow, $dlSize) use ($progressBar) {
                 // set the progress bar format to display how many megabytes are downloaded
-                $progressBar->setProgress($dlNow / 1e+6);
-                $progressBar->setMaxSteps($dlSize / 1e+6);
+                $progressBar->setProgress((int) ($dlNow / 1e+6));
+                $progressBar->setMaxSteps((int) ($dlSize / 1e+6));
             },
         ]);
 
@@ -70,7 +71,7 @@ class PklDownloader
         }
     }
 
-    private function buildDownloadUrl() : string
+    private function buildDownloadUrl(): string
     {
         $downloadUrl = 'https://github.com/apple/pkl/releases/download/'.self::PKL_CLI_VERSION.'/pkl-';
         if ($this->isMacOs()) {
@@ -82,22 +83,22 @@ class PklDownloader
         return 'https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-java/0.25.2/pkl-cli-java-'.self::PKL_CLI_VERSION.'.jar';
     }
 
-    private function isArmArch(): string
+    private function isArmArch(): bool
     {
         return str_contains(strtolower(php_uname('m')), 'arm');
     }
 
-    private function isMacOs(): string
+    private function isMacOs(): bool
     {
         return str_contains(strtolower(php_uname('s')), 'darwin');
     }
 
-    private function isLinux(): string
+    private function isLinux(): bool
     {
         return str_contains(strtolower(php_uname('s')), 'linux');
     }
 
-    private function is32Bit(): string
+    private function is32Bit(): bool
     {
         return \PHP_INT_SIZE === 4;
     }

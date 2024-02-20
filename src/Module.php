@@ -9,10 +9,10 @@ class Module
      */
     private array $properties = [];
 
-    public function __set(string $name, $value): void
+    public function __set(string $name, mixed $value): void
     {
         if (\is_array($value)) {
-            $newValue = new Module();
+            $newValue = new self();
             foreach ($value as $key => $val) {
                 $newValue->__set($key, $val);
             }
@@ -23,7 +23,7 @@ class Module
         $this->properties[$name] = $value;
     }
 
-    public function get(string $name)
+    public function get(string $name): mixed
     {
         return $this->properties[$name];
     }
