@@ -34,10 +34,33 @@ If you do so, you must set the `PKL_CLI_BIN` environment variable to the path of
 
 ## Usage
 
+### Using the CLI tool
+
+This package offers a CLI tool to interact with the PKL CLI tool. You can use the `phikl` command to interact with the
+PKL CLI tool, among other things.
+
+Here are some examples of how to use the `phikl` command:
+
+```bash
+# Install the PKL CLI tool
+vendor/bin/phikl install
+
+# Update/Force install the last supported PKL CLI tool
+vendor/bin/phikl update
+
+# Print current PKL CLI tool version
+vendor/bin/phikl version
+
+# Evaluate one or many PKL file
+vendor/bin/phikl eval config/simple.pkl config/nested.pkl
+```
+
+### Using Pkl in PHP
+
 The main way to use this library is to evaluate PKL code. You can do this by using the `evaluate` method of the
 `Pkl` class.
 
-### Basic Usage with PklModule
+#### Basic Usage with PklModule
 
 Let's say you have the following PKL code:
 
@@ -89,7 +112,7 @@ echo $module->get('woodPigeon')->get('diet'); // Seeds
 echo $module->get('woodPigeon')->get('taxonomy')->get('species'); // Columba palumbus
 ```
 
-## Cast to other types
+#### Cast to other types
 
 You can cast the values to other types using the `cast` method with a class
 representing your data. Let's take the following PKL code:
@@ -142,7 +165,7 @@ use Phpkl\Pkl;
 $user = Pkl::eval('config/user.pkl', User::class)['myUser'];
 ```
 
-## The `PklProperty` Attribute
+#### The `PklProperty` Attribute
 
 You can use the `PklProperty` attribute to specify the name of the property in the PKL file. This is useful when the
 property name in the PKL file is different from the property name in the PHP class. Let's take the following PKL code:

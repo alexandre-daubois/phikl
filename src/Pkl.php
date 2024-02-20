@@ -83,6 +83,20 @@ class Pkl
         return trim($process->getOutput());
     }
 
+    public static function rawEval(string ...$modules): string
+    {
+        self::initExecutable();
+
+        $process = new Process([self::$executable, 'eval', ...$modules]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getErrorOutput());
+        }
+
+        return trim($process->getOutput());
+    }
+
     private static function initExecutable(): void
     {
         self::$executable ??= (function () {

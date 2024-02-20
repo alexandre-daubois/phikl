@@ -26,9 +26,9 @@ final class PklDownloader
         return file_exists($location.'/pkl');
     }
 
-    public function download(SymfonyStyle $io, string $location = 'vendor/bin'): void
+    public function download(SymfonyStyle $io, string $location = 'vendor/bin', bool $force = false): void
     {
-        if ($this->alreadyDownloaded($location)) {
+        if ($this->alreadyDownloaded($location) && !$force) {
             throw new PklCliAlreadyDownloadedException('Pkl CLI is already installed.');
         }
 

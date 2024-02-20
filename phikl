@@ -56,11 +56,14 @@ require __DIR__.'/vendor/autoload.php';
     ->setName('Phikl')
     ->setVersion('0.1')
     ->addArgument('subcommand', InputArgument::REQUIRED, 'The subcommand to run')
-    ->addOption('location', 'l', InputOption::VALUE_REQUIRED, 'Location to install pkl cli', 'vendor/bin')
+    ->addArgument('args', InputArgument::IS_ARRAY, 'The arguments to pass to the subcommand')
+    ->addOption('location', 'l', InputOption::VALUE_REQUIRED, 'Location to install pkl cli when installing it', 'vendor/bin')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {
             return Runner::run($input, $output);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            $output->writeln('<error>'.$e->getMessage().'</error>');
+
             return Command::FAILURE;
         }
     })
