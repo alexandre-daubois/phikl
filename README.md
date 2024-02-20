@@ -1,6 +1,8 @@
 🥒 PHPKL - Apple's PKL binding in PHP
 =====================================
 
+[![PHPUnit](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml/badge.svg)](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml)
+
 This is a PHP binding for Apple's PKL language. This library uses the official PKL CLI tool from Apple and
 provides a PHP interface to it.
 
@@ -161,6 +163,8 @@ myUser {
 You can define a `User` class like this:
 
 ```php
+use Phpkl\PklProperty;
+
 class User
 {
     #[PklProperty('id')]
