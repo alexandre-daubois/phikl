@@ -18,7 +18,7 @@ class PklRunnerTest extends TestCase
     public function testEvalSimpleFile(): void
     {
         $runner = new Pkl();
-        $result = $runner->eval(__DIR__.'/../fixtures/simple.pkl');
+        $result = $runner->eval(__DIR__.'/../Fixtures/simple.pkl');
 
         $this->assertInstanceOf(Module::class, $result);
         $this->assertSame('Pkl: Configure your Systems in New Ways', $result->get('name'));
@@ -30,7 +30,7 @@ class PklRunnerTest extends TestCase
     public function testEvalMultipleConfigFiles(): void
     {
         $runner = new Pkl();
-        $result = $runner->eval(__DIR__.'/../fixtures/multiple.pkl');
+        $result = $runner->eval(__DIR__.'/../Fixtures/multiple.pkl');
 
         $this->assertInstanceOf(Module::class, $result);
 
