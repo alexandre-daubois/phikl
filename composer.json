@@ -1,7 +1,7 @@
 {
-    "name": "alexandre-daubois/phpkl",
+    "name": "alexandre-daubois/phikl",
     "type": "library",
-    "description": "Apple's PKL language bridge for PHP",
+    "description": "Apple's Pkl language bridge for PHP",
     "keywords": ["pkl", "apple", "pickle", "language", "configuration", "configuration-as-code"],
     "license": "MIT",
     "authors": [
@@ -27,6 +27,9 @@
         },
         "sort-packages": true
     },
+    "bin": [
+        "phikl"
+    ],
     "autoload": {
         "psr-4": { "Phpkl\\": "src", "Phpkl\\Tests\\": "tests" }
     },

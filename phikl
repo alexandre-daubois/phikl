@@ -53,7 +53,7 @@ use Symfony\Component\Console\SingleCommandApplication;
 require __DIR__.'/vendor/autoload.php';
 
 (new SingleCommandApplication())
-    ->setName('Phpkl')
+    ->setName('Phikl')
     ->setVersion('0.1')
     ->addArgument('subcommand', InputArgument::REQUIRED, 'The subcommand to run')
     ->addOption('location', 'l', InputOption::VALUE_REQUIRED, 'Location to install pkl cli', 'vendor/bin')

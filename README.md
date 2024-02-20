@@ -1,7 +1,7 @@
-🥒 PHPKL - Apple's Pkl Bridge for PHP
+🥒 Phikl - Apple's Pkl Bridge for PHP
 =====================================
 
-[![PHPUnit](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml/badge.svg)](https://github.com/alexandre-daubois/phpkl/actions/workflows/ci.yaml)
+[![PHPUnit](https://github.com/alexandre-daubois/phikl/actions/workflows/ci.yaml/badge.svg)](https://github.com/alexandre-daubois/phikl/actions/workflows/ci.yaml)
 
 This is a PHP binding for Apple's PKL language. This library uses the official PKL CLI tool from Apple and
 provides a PHP interface to it.
@@ -13,7 +13,7 @@ This library is still in development and is not yet ready for production use.
 You can install this library using composer:
 
 ```bash
-composer require alexandre-daubois/phpkl
+composer require alexandre-daubois/phikl
 ```
 
 The CLI tool must be installed on your system. You can either install it manually and set the `PKL_CLI_BIN`
@@ -21,13 +21,13 @@ environment variable to the path of the binary or use the `install` subcommand o
 the latest supported version of the PKL CLI tool into the `vendor/bin` directory.
 
 ```bash
-vendor/bin/phpkl install
+vendor/bin/phikl install
 ```
 
 You can also set the download location by using the `--location` option:
 
 ```bash
-vendor/bin/phpkl install --location=/usr/local/bin
+vendor/bin/phikl install --location=/usr/local/bin
 ```
 
 If you do so, you must set the `PKL_CLI_BIN` environment variable to the path of the binary.
