@@ -51,9 +51,7 @@ You can evaluate this code like this:
 ```php
 use Phpkl\Pkl;
 
-// instantiate the Pkl wrapper
-$pkl = new Pkl();
-$module = $pkl->evaluate('config/simple.pkl');
+$module = Pkl::evaluate('config/simple.pkl');
 
 // you can then interact with the module
 echo $module->get('name'); // Pkl: Configure your Systems in New Ways
@@ -79,9 +77,7 @@ woodPigeon {
 ```php
 use Phpkl\Pkl;
 
-// instantiate the Pkl wrapper
-$pkl = new Pkl();
-$module = $pkl->evaluate('config/nested.pkl');
+$module = Pkl::evaluate('config/nested.pkl');
 
 // you can then interact with the module
 echo $module->get('woodPigeon')->get('name'); // Common wood pigeon

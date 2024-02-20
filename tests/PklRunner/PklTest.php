@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl\Tests\PklRunner;
+namespace Phpkl\Tests;
 
 use Phpkl\Module;
 use Phpkl\Pkl;
@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Pkl::class)]
-class PklRunnerTest extends TestCase
+class PklTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
@@ -17,8 +17,7 @@ class PklRunnerTest extends TestCase
 
     public function testEvalSimpleFile(): void
     {
-        $runner = new Pkl();
-        $result = $runner->eval(__DIR__.'/../Fixtures/simple.pkl');
+        $result = Pkl::eval(__DIR__.'/../Fixtures/simple.pkl');
 
         $this->assertInstanceOf(Module::class, $result);
         $this->assertSame('Pkl: Configure your Systems in New Ways', $result->get('name'));
@@ -29,8 +28,7 @@ class PklRunnerTest extends TestCase
 
     public function testEvalMultipleConfigFiles(): void
     {
-        $runner = new Pkl();
-        $result = $runner->eval(__DIR__.'/../Fixtures/multiple.pkl');
+        $result = Pkl::eval(__DIR__.'/../Fixtures/multiple.pkl');
 
         $this->assertInstanceOf(Module::class, $result);
 

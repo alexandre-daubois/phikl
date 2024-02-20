@@ -12,16 +12,7 @@ use Symfony\Component\Serializer\Serializer;
 
 class Pkl
 {
-    private string $executable;
-
-    public function __construct()
-    {
-        $this->executable = $_ENV['PKL_CLI_BIN'] ?? $_SERVER['PKL_CLI_BIN'] ?? 'vendor/bin/pkl';
-
-        if (!is_executable($this->executable)) {
-            throw new \RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl --download` command.');
-        }
-    }
+    private static string $executable;
 
     /**
      * @template T of object
@@ -30,9 +21,11 @@ class Pkl
      *
      * @return T[]|T
      */
-    public function eval(string $module, string $toClass = Module::class): array|object
+    public static function eval(string $module, string $toClass = Module::class): array|object
     {
-        $process = new Process([$this->executable, 'eval', '-f', 'json', $module]);
+        Pkl::initExecutable();
+
+        $process = new Process([Pkl::$executable, 'eval', '-f', 'json', $module]);
 
         try {
             $process->mustRun();
@@ -47,5 +40,18 @@ class Pkl
         ], [new JsonEncoder()]);
 
         return $serializer->deserialize(trim($process->getOutput()), $toClass, 'json');
+    }
+
+    private static function initExecutable(): void
+    {
+        Pkl::$executable ??= (function () {
+            $exec = $_ENV['PKL_CLI_BIN'] ?? $_SERVER['PKL_CLI_BIN'] ?? 'vendor/bin/pkl';
+
+            if (!is_executable($exec)) {
+                throw new \RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl --download` command.');
+            }
+
+            return $exec;
+        })();
     }
 }
