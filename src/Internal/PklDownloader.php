@@ -63,7 +63,7 @@ final class PklDownloader
         $io->comment(sprintf('Pkl CLI downloaded to %s', $pklCliPath));
 
         if ($location !== 'vendor/bin') {
-            $io->warning('You used a custom location for the Pkl CLI. Make sure to add the location to set the PKL_CLI_BIN environment variable.');
+            $io->caution('You used a custom location for the Pkl CLI. Make sure to add the location to set the PKL_CLI_BIN environment variable.');
         }
 
         if (str_ends_with($downloadUrl, '.jar')) {

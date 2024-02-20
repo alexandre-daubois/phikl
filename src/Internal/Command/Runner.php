@@ -25,6 +25,8 @@ final class Runner
             return self::version($input, $output);
         } elseif ($input->getArgument('subcommand') === 'eval') {
             return self::eval($input, $output);
+        } elseif ($input->getArgument('subcommand') === 'dump') {
+            return self::dump($input, $output);
         }
 
         return Command::INVALID;
@@ -78,6 +80,31 @@ final class Runner
 
         try {
             $io->writeln(Pkl::rawEval(...$input->getArgument('args')));
+        } catch (\Exception $e) {
+            $io->error('Pkl failed: '.$e->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        return Command::SUCCESS;
+    }
+
+    private static function dump(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        if ($input->getOption('cache-file')) {
+            Pkl::setCacheFile($input->getOption('cache-file'));
+        }
+
+        try {
+            $cacheFile = Pkl::dump();
+
+            $io->success(sprintf('Cache file dumped to "%s"', $cacheFile));
+
+            if ($input->getOption('cache-file') !== '.phikl.cache') {
+                $io->caution('Make sure to declare the PHIKL_CACHE_FILE environment variable to use the cache file.');
+            }
         } catch (\Exception $e) {
             $io->error('Pkl failed: '.$e->getMessage());
 

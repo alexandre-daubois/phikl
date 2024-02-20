@@ -2,6 +2,7 @@
 
 namespace Phpkl;
 
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -13,6 +14,7 @@ use Symfony\Component\Serializer\Serializer;
 class Pkl
 {
     private static string $executable;
+    private static string $cacheFile = '.phikl.cache';
 
     /**
      * @template T of object
@@ -95,6 +97,40 @@ class Pkl
         }
 
         return trim($process->getOutput());
+    }
+
+    public static function dump(): string
+    {
+        self::initExecutable();
+
+        $finder = new Finder();
+        $finder->files()
+            ->in((string) getcwd())
+            ->name('*.pkl')
+            ->sortByName();
+
+        $filenames = array_map(fn ($file) => $file->getPathname(), iterator_to_array($finder));
+        $process = new Process([self::$executable, 'eval', '-f', 'json', ...$filenames]);
+
+        $output = trim($process->mustRun()->getOutput());
+
+        $dumpedContent = explode('---', $output);
+        $dumpedContent = array_combine($filenames, $dumpedContent);
+
+        $dumpedContent = array_map(fn ($content) => trim($content), $dumpedContent);
+
+        file_put_contents(self::$cacheFile, json_encode($dumpedContent, \JSON_UNESCAPED_UNICODE));
+
+        return self::$cacheFile;
+    }
+
+    public static function setCacheFile(string $cacheFile): void
+    {
+        if (!is_writable(\dirname($cacheFile)) || (file_exists($cacheFile) && !is_writable($cacheFile))) {
+            throw new \RuntimeException(sprintf('The cache file "%s" is not writable.', $cacheFile));
+        }
+
+        self::$cacheFile = $cacheFile;
     }
 
     private static function initExecutable(): void
