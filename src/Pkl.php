@@ -114,7 +114,7 @@ class Pkl
 
         $output = trim($process->mustRun()->getOutput());
 
-        $dumpedContent = explode('---', $output);
+        $dumpedContent = explode("\n---\n", $output);
         $dumpedContent = array_combine($filenames, $dumpedContent);
 
         $dumpedContent = array_map(fn ($content) => trim($content), $dumpedContent);
