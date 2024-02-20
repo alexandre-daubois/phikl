@@ -1,7 +1,7 @@
 {
     "name": "alexandre-daubois/phpkl",
     "type": "library",
-    "description": "Apple PKL language implementation in PHP",
+    "description": "Apple's PKL language bridge for PHP",
     "keywords": ["pkl", "apple", "pickle", "language", "configuration", "configuration-as-code"],
     "license": "MIT",
     "authors": [
