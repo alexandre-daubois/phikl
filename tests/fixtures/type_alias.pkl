@@ -1,6 +1,0 @@
-module Application
-
-/// The environment to deploy to.
-environment: Environment
-
-typealias Environment = "dev"|"qa"|"prod"

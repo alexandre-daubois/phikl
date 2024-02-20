@@ -13,7 +13,12 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.2",
+        "symfony/console": "^7.0",
+        "symfony/http-client": "^7.0",
+        "symfony/process": "^7.0",
+        "symfony/property-access": "^7.0",
+        "symfony/serializer": "^7.0"
     },
     "config": {
         "optimize-autoloader": true,

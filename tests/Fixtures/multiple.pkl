@@ -1,0 +1,24 @@
+woodPigeon {
+    name = "Common wood pigeon"
+    diet = "Seeds"
+    taxonomy {
+        species = "Columba palumbus"
+    }
+}
+
+stockPigeon {
+    name = "Stock pigeon"
+    diet = "Seeds"
+    taxonomy {
+        species = "Columba oenas"
+    }
+}
+
+dodo {
+    name = "Dodo"
+    diet = "Seeds"
+    extinct = true
+    taxonomy {
+        species = "Raphus cucullatus"
+    }
+}

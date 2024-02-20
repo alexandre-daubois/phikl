@@ -1,6 +1,0 @@
-/// The hostname that this server responds to.
-hostname: String
-
-/// The port to listen on.
-port: UInt16
-
