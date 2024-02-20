@@ -60,7 +60,7 @@ final class PklDownloader
             chmod($pklCliPath, 0755);
         }
 
-        $io->success(sprintf('Pkl CLI downloaded successfully to %s', $pklCliPath));
+        $io->comment(sprintf('Pkl CLI downloaded to %s', $pklCliPath));
 
         if ($location !== 'vendor/bin') {
             $io->warning('You used a custom location for the Pkl CLI. Make sure to add the location to set the PKL_CLI_BIN environment variable.');

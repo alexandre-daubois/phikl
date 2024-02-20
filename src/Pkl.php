@@ -71,13 +71,25 @@ class Pkl
         return $instances;
     }
 
+    public static function binaryVersion(?string $binPath = null): string
+    {
+        if ($binPath === null) {
+            self::initExecutable();
+        }
+
+        $process = new Process([$binPath ?? self::$executable, '--version']);
+        $process->mustRun();
+
+        return trim($process->getOutput());
+    }
+
     private static function initExecutable(): void
     {
         self::$executable ??= (function () {
             $exec = $_ENV['PKL_CLI_BIN'] ?? $_SERVER['PKL_CLI_BIN'] ?? 'vendor/bin/pkl';
 
             if (!is_executable($exec)) {
-                throw new \RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl --download` command.');
+                throw new \RuntimeException('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phpkl install` command.');
             }
 
             return $exec;

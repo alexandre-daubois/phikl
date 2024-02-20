@@ -44,6 +44,7 @@ require LOCAL_COMPOSER_INSTALL;
 
 use Phpkl\Internal\Command\Runner;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +55,7 @@ require __DIR__.'/vendor/autoload.php';
 (new SingleCommandApplication())
     ->setName('Phpkl')
     ->setVersion('0.1')
-    ->addOption('download', 'd', InputOption::VALUE_NONE, 'Download pkl cli')
+    ->addArgument('subcommand', InputArgument::REQUIRED, 'The subcommand to run')
     ->addOption('location', 'l', InputOption::VALUE_REQUIRED, 'Location to install pkl cli', 'vendor/bin')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {

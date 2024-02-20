@@ -17,17 +17,17 @@ composer require alexandre-daubois/phpkl
 ```
 
 The CLI tool must be installed on your system. You can either install it manually and set the `PKL_CLI_BIN`
-environment variable to the path of the binary or use the `--download` option of the `pkl` command to download
+environment variable to the path of the binary or use the `install` subcommand of the `pkl` command to download
 the latest supported version of the PKL CLI tool into the `vendor/bin` directory.
 
 ```bash
-vendor/bin/phpkl --download
+vendor/bin/phpkl install
 ```
 
 You can also set the download location by using the `--location` option:
 
 ```bash
-vendor/bin/phpkl --download --location=/usr/local/bin
+vendor/bin/phpkl install --location=/usr/local/bin
 ```
 
 If you do so, you must set the `PKL_CLI_BIN` environment variable to the path of the binary.
