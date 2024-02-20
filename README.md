@@ -21,13 +21,13 @@ environment variable to the path of the binary or use the `--download` option of
 the latest supported version of the PKL CLI tool into the `vendor/bin` directory.
 
 ```bash
-vendor/bin/pkl --download
+vendor/bin/phpkl --download
 ```
 
 You can also set the download location by using the `--location` option:
 
 ```bash
-vendor/bin/pkl --download --location=/usr/local/bin
+vendor/bin/phpkl --download --location=/usr/local/bin
 ```
 
 If you do so, you must set the `PKL_CLI_BIN` environment variable to the path of the binary.
