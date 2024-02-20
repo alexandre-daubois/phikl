@@ -2,7 +2,9 @@
 
 namespace Phpkl;
 
-class PklModule implements \ArrayAccess
+use Phpkl\Attribute\PklProperty;
+
+class PklModule implements \ArrayAccess, PklModuleInterface
 {
     /**
      * @var array<string, scalar|PklModule>
@@ -23,9 +25,49 @@ class PklModule implements \ArrayAccess
         $this->properties[$name] = $value;
     }
 
+    /**
+     * @return scalar|PklModule
+     */
     public function get(string $name): mixed
     {
         return $this->properties[$name];
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $toClass
+     *
+     * @return T
+     */
+    public function cast(string $toClass): object
+    {
+        $reflectionClass = new \ReflectionClass($toClass);
+        $copy = $reflectionClass->newInstanceWithoutConstructor();
+
+        foreach ($reflectionClass->getProperties() as $destProperty) {
+            $attribute = $destProperty->getAttributes(PklProperty::class);
+            $sourcePropertyName = $attribute[0] ? $attribute[0]->newInstance()->name : $destProperty->name;
+
+            if (isset($this->properties[$sourcePropertyName])) {
+                $srcProperty = $this->properties[$sourcePropertyName];
+                if ($srcProperty instanceof self) {
+                    // it should be an object or an array in the destination class
+                    $destPropertyType = $destProperty->getType()?->getName();
+
+                    if ($destPropertyType === 'array') {
+                        $destProperty->setValue($copy, $srcProperty->toArray());
+                    } else {
+                        $destPropertyInstance = $srcProperty->cast($destPropertyType);
+                        $destProperty->setValue($copy, $destPropertyInstance);
+                    }
+                } else {
+                    $destProperty->setValue($copy, $this->properties[$sourcePropertyName]);
+                }
+            }
+        }
+
+        return $copy;
     }
 
     public function offsetExists(mixed $offset): bool
@@ -46,5 +88,26 @@ class PklModule implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         unset($this->properties[$offset]);
+    }
+
+    public function toArray(): array
+    {
+        $array = [];
+        foreach ($this->properties as $key => $value) {
+            if ($value instanceof self) {
+                $array[$key] = $value->toArray();
+
+                continue;
+            }
+
+            $array[$key] = $value;
+        }
+
+        return $array;
+    }
+
+    public function keys(): array
+    {
+        return array_keys($this->properties);
     }
 }

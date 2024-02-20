@@ -19,13 +19,27 @@ class Pkl
      *
      * @param class-string<T> $toClass
      *
-     * @return T[]|T
+     * All properties will be cast to `$toClass` class, if different
+     * from PklModule. For example, the following module will
+     * be cast to two `$toClass` instances:
+     *
+     * ```pkl
+     * user1 {
+     *     id: 1
+     * }
+     *
+     * user2 {
+     *    id: 2
+     * }
+     * ```
+     *
+     * @return array<T>|PklModule
      */
-    public static function eval(string $module, string $toClass = PklModule::class): array|object
+    public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
-        Pkl::initExecutable();
+        self::initExecutable();
 
-        $process = new Process([Pkl::$executable, 'eval', '-f', 'json', $module]);
+        $process = new Process([self::$executable, 'eval', '-f', 'json', $module]);
 
         try {
             $process->mustRun();
@@ -39,12 +53,23 @@ class Pkl
             new PropertyNormalizer(),
         ], [new JsonEncoder()]);
 
-        return $serializer->deserialize(trim($process->getOutput()), $toClass, 'json');
+        /** @var PklModule $module */
+        $module = $serializer->deserialize(trim($process->getOutput()), PklModule::class, 'json');
+        if ($toClass === PklModule::class) {
+            return $module;
+        }
+
+        $instances = [];
+        foreach ($module->keys() as $key) {
+            $instances[$key] = $module->get($key)->cast($toClass);
+        }
+
+        return $instances;
     }
 
     private static function initExecutable(): void
     {
-        Pkl::$executable ??= (function () {
+        self::$executable ??= (function () {
             $exec = $_ENV['PKL_CLI_BIN'] ?? $_SERVER['PKL_CLI_BIN'] ?? 'vendor/bin/pkl';
 
             if (!is_executable($exec)) {

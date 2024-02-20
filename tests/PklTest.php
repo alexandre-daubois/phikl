@@ -2,8 +2,9 @@
 
 namespace Phpkl\Tests;
 
-use Phpkl\PklModule;
 use Phpkl\Pkl;
+use Phpkl\PklModule;
+use Phpkl\Tests\Fixtures\User;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +18,7 @@ class PklTest extends TestCase
 
     public function testEvalSimpleFile(): void
     {
-        $result = Pkl::eval(__DIR__.'/../Fixtures/simple.pkl');
+        $result = Pkl::eval(__DIR__.'/Fixtures/simple.pkl');
 
         $this->assertInstanceOf(PklModule::class, $result);
         $this->assertSame('Pkl: Configure your Systems in New Ways', $result->get('name'));
@@ -28,7 +29,7 @@ class PklTest extends TestCase
 
     public function testEvalMultipleConfigFiles(): void
     {
-        $result = Pkl::eval(__DIR__.'/../Fixtures/multiple.pkl');
+        $result = Pkl::eval(__DIR__.'/Fixtures/multiple.pkl');
 
         $this->assertInstanceOf(PklModule::class, $result);
 
@@ -38,5 +39,17 @@ class PklTest extends TestCase
 
         $this->assertInstanceOf(PklModule::class, $result->get('stockPigeon'));
         $this->assertInstanceOf(PklModule::class, $result->get('dodo'));
+    }
+
+    public function testEvalWithCustomClass(): void
+    {
+        $result = Pkl::eval(__DIR__.'/Fixtures/user.pkl', User::class);
+
+        $this->assertIsArray($result);
+
+        $user = $result['user'];
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame(1, $user->id);
+        $this->assertSame('John Doe', $user->name);
     }
 }

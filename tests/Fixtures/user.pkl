@@ -1,0 +1,10 @@
+user {
+    id = 1
+    name = "John Doe"
+    address {
+        street = "123 Main St"
+        city = "Springfield"
+        state = "IL"
+        zip = "62701"
+    }
+}
