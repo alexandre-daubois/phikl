@@ -61,6 +61,10 @@ class Pkl
 
         $instances = [];
         foreach ($module->keys() as $key) {
+            if (!$module->get($key) instanceof PklModule) {
+                throw new \RuntimeException(sprintf('The module "%s" is not a PklModule instance.', $key));
+            }
+
             $instances[$key] = $module->get($key)->cast($toClass);
         }
 

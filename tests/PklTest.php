@@ -33,8 +33,11 @@ class PklTest extends TestCase
 
         $this->assertInstanceOf(PklModule::class, $result);
 
+        $this->assertInstanceOf(PklModule::class, $result->get('woodPigeon'));
         $this->assertSame('Common wood pigeon', $result->get('woodPigeon')->get('name'));
         $this->assertSame('Seeds', $result->get('woodPigeon')->get('diet'));
+
+        $this->assertInstanceOf(PklModule::class, $result->get('woodPigeon')->get('taxonomy'));
         $this->assertSame('Columba palumbus', $result->get('woodPigeon')->get('taxonomy')->get('species'));
 
         $this->assertInstanceOf(PklModule::class, $result->get('stockPigeon'));

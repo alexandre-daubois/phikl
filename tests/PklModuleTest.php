@@ -34,7 +34,10 @@ class PklModuleTest extends TestCase
     {
         /** @var PklModule $module */
         $module = Pkl::eval(__DIR__.'/Fixtures/user.pkl');
-        $class = $module->get('user')->cast(User::class);
+        $class = $module->get('user');
+
+        $this->assertInstanceOf(PklModule::class, $class);
+        $class = $class->cast(User::class);
 
         $this->assertSame(1, $class->id);
         $this->assertSame('John Doe', $class->name);
@@ -50,7 +53,10 @@ class PklModuleTest extends TestCase
     {
         /** @var PklModule $module */
         $module = Pkl::eval(__DIR__.'/Fixtures/user.pkl');
-        $class = $module->get('user')->cast(UserWithArrayAddress::class);
+        $class = $module->get('user');
+
+        $this->assertInstanceOf(PklModule::class, $class);
+        $class = $class->cast(UserWithArrayAddress::class);
 
         $this->assertSame(1, $class->id);
         $this->assertSame('John Doe', $class->name);
@@ -67,7 +73,10 @@ class PklModuleTest extends TestCase
         /** @var PklModule $module */
         $module = Pkl::eval(__DIR__.'/Fixtures/user.pkl');
 
-        $class = $module->get('user')->cast(UserWithAttributes::class);
+        $class = $module->get('user');
+
+        $this->assertInstanceOf(PklModule::class, $class);
+        $class = $class->cast(UserWithAttributes::class);
 
         $this->assertSame(1, $class->identifier);
         $this->assertSame('John Doe', $class->nameOfUser);

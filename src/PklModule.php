@@ -4,6 +4,9 @@ namespace Phpkl;
 
 use Phpkl\Attribute\PklProperty;
 
+/**
+ * @implements \ArrayAccess<string, scalar|PklModule>
+ */
 class PklModule implements \ArrayAccess, PklModuleInterface
 {
     /**
@@ -47,13 +50,17 @@ class PklModule implements \ArrayAccess, PklModuleInterface
 
         foreach ($reflectionClass->getProperties() as $destProperty) {
             $attribute = $destProperty->getAttributes(PklProperty::class);
-            $sourcePropertyName = $attribute[0] ? $attribute[0]->newInstance()->name : $destProperty->name;
+            $sourcePropertyName = isset($attribute[0]) ? $attribute[0]->newInstance()->name : $destProperty->name;
 
             if (isset($this->properties[$sourcePropertyName])) {
                 $srcProperty = $this->properties[$sourcePropertyName];
                 if ($srcProperty instanceof self) {
                     // it should be an object or an array in the destination class
-                    $destPropertyType = $destProperty->getType()?->getName();
+                    $type = $destProperty->getType();
+                    \assert($type instanceof \ReflectionNamedType);
+
+                    /** @var class-string<object> $destPropertyType */
+                    $destPropertyType = $type->getName();
 
                     if ($destPropertyType === 'array') {
                         $destProperty->setValue($copy, $srcProperty->toArray());
@@ -90,6 +97,9 @@ class PklModule implements \ArrayAccess, PklModuleInterface
         unset($this->properties[$offset]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         $array = [];
@@ -106,6 +116,9 @@ class PklModule implements \ArrayAccess, PklModuleInterface
         return $array;
     }
 
+    /**
+     * @return array<string>
+     */
     public function keys(): array
     {
         return array_keys($this->properties);
