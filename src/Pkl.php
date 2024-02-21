@@ -2,6 +2,8 @@
 
 namespace Phpkl;
 
+use Phpkl\Cache\Cache;
+use Phpkl\Cache\Entry;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -14,7 +16,7 @@ use Symfony\Component\Serializer\Serializer;
 class Pkl
 {
     private static string $executable;
-    private static string $cacheFile = '.phikl.cache';
+    private static ?Cache $cache = null;
 
     /**
      * @template T of object
@@ -39,14 +41,20 @@ class Pkl
      */
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
-        self::initExecutable();
+        self::$cache ??= new Cache();
 
-        $process = new Process([self::$executable, 'eval', '-f', 'json', $module]);
+        if (null === $entry = self::$cache->get($module)) {
+            self::initExecutable();
 
-        try {
-            $process->mustRun();
-        } catch (ProcessFailedException) {
-            throw new \RuntimeException($process->getErrorOutput());
+            $process = new Process([self::$executable, 'eval', '-f', 'json', $module]);
+
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException) {
+                throw new \RuntimeException($process->getErrorOutput());
+            }
+
+            $entry = new Entry($module, trim($process->getOutput()));
         }
 
         $serializer = new Serializer([
@@ -56,7 +64,7 @@ class Pkl
         ], [new JsonEncoder()]);
 
         /** @var PklModule $module */
-        $module = $serializer->deserialize(trim($process->getOutput()), PklModule::class, 'json');
+        $module = $serializer->deserialize($entry->content, PklModule::class, 'json');
         if ($toClass === PklModule::class) {
             return $module;
         }
@@ -117,11 +125,14 @@ class Pkl
         $dumpedContent = explode("\n---\n", $output);
         $dumpedContent = array_combine($filenames, $dumpedContent);
 
-        $dumpedContent = array_map(fn ($content) => trim($content), $dumpedContent);
+        self::$cache = new Cache();
+        foreach ($dumpedContent as $filename => $content) {
+            self::$cache->add(new Entry($filename, trim($content)));
+        }
 
-        file_put_contents(self::$cacheFile, json_encode($dumpedContent, \JSON_UNESCAPED_UNICODE));
+        self::$cache->save();
 
-        return self::$cacheFile;
+        return self::$cache->getCacheFile();
     }
 
     public static function setCacheFile(string $cacheFile): void
@@ -130,7 +141,8 @@ class Pkl
             throw new \RuntimeException(sprintf('The cache file "%s" is not writable.', $cacheFile));
         }
 
-        self::$cacheFile = $cacheFile;
+        self::$cache ??= new Cache();
+        self::$cache->setCacheFile($cacheFile);
     }
 
     private static function initExecutable(): void
