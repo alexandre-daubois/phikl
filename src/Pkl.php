@@ -13,10 +13,15 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * This is the main class to interact
+ * with the PKL CLI tool.
+ */
 class Pkl
 {
     private static string $executable;
     private static ?Cache $cache = null;
+    private static bool $cacheEnabled = true;
 
     /**
      * @template T of object
@@ -42,7 +47,7 @@ class Pkl
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
         self::$cache ??= new Cache();
-        if (null === $entry = self::$cache->get($module)) {
+        if (null === $entry = self::$cache->get($module) || !self::$cacheEnabled) {
             self::initExecutable();
 
             $process = new Process([self::$executable, 'eval', '-f', 'json', $module]);
@@ -81,6 +86,9 @@ class Pkl
         return $instances;
     }
 
+    /**
+     * Returns the version of the PKL CLI tool.
+     */
     public static function binaryVersion(?string $binPath = null): string
     {
         if ($binPath === null) {
@@ -93,6 +101,17 @@ class Pkl
         return trim($process->getOutput());
     }
 
+    /**
+     * Evaluates the given modules and returns the raw output. This method
+     * is useful when you want to evaluate multiple modules at once in the
+     * original format. For example:
+     *
+     * ```php
+     * $result = Pkl::rawEval('module1', 'module2');
+     * ```
+     *
+     * The `$result` will contain the raw output of the `pkl eval module1 module2`.
+     */
     public static function rawEval(string ...$modules): string
     {
         self::initExecutable();
@@ -107,6 +126,11 @@ class Pkl
         return trim($process->getOutput());
     }
 
+    /**
+     * Dumps all the .pkl files in the project and returns the cache file.
+     * The cache file is used to avoid calling the PKL CLI tool on every
+     * `Pkl::eval()` call.
+     */
     public static function dump(): string
     {
         self::initExecutable();
@@ -135,6 +159,9 @@ class Pkl
         return self::$cache->getCacheFile();
     }
 
+    /**
+     * Sets the cache file to use, if different from the default one.
+     */
     public static function setCacheFile(string $cacheFile): void
     {
         if (!is_writable(\dirname($cacheFile)) || (file_exists($cacheFile) && !is_writable($cacheFile))) {
@@ -143,6 +170,16 @@ class Pkl
 
         self::$cache ??= new Cache();
         self::$cache->setCacheFile($cacheFile);
+    }
+
+    /**
+     * Whether the cache is enabled or not.
+     * If the cache is disabled, the PKL CLI tool will be called on every
+     * `Pkl::eval()` call.
+     */
+    public static function toggleCache(bool $enabled): void
+    {
+        self::$cacheEnabled = $enabled;
     }
 
     private static function initExecutable(): void
