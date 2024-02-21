@@ -4,6 +4,7 @@ namespace Phpkl;
 
 use Phpkl\Cache\Cache;
 use Phpkl\Cache\Entry;
+use Phpkl\Exception\CorruptedCacheException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -47,7 +48,7 @@ class Pkl
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
         self::$cache ??= new Cache();
-        if (null === $entry = self::$cache->get($module) || !self::$cacheEnabled) {
+        if ((null === $entry = self::$cache->get($module)) || !self::$cacheEnabled) {
             self::initExecutable();
 
             $process = new Process([self::$executable, 'eval', '-f', 'json', $module]);
@@ -157,6 +158,14 @@ class Pkl
         self::$cache->save();
 
         return self::$cache->getCacheFile();
+    }
+
+    /**
+     * @throws CorruptedCacheException
+     */
+    public static function validateCache(): void
+    {
+        self::$cache?->validate();
     }
 
     /**

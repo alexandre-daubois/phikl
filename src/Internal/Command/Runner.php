@@ -2,6 +2,7 @@
 
 namespace Phpkl\Internal\Command;
 
+use Phpkl\Exception\CorruptedCacheException;
 use Phpkl\Internal\PklDownloader;
 use Phpkl\Pkl;
 use Symfony\Component\Console\Command\Command;
@@ -27,6 +28,8 @@ final class Runner
             return self::eval($input, $output);
         } elseif ($input->getArgument('subcommand') === 'dump') {
             return self::dump($input, $output);
+        } elseif ($input->getArgument('subcommand') === 'validate-cache') {
+            return self::validateCache($input, $output);
         }
 
         return Command::INVALID;
@@ -107,6 +110,27 @@ final class Runner
             }
         } catch (\Exception $e) {
             $io->error('Pkl failed: '.$e->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        return Command::SUCCESS;
+    }
+
+    private static function validateCache(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        if ($input->getOption('cache-file')) {
+            Pkl::setCacheFile($input->getOption('cache-file'));
+        }
+
+        try {
+            Pkl::validateCache();
+
+            $io->success('Cache file is valid.');
+        } catch (CorruptedCacheException $e) {
+            $io->error($e->getMessage());
 
             return Command::FAILURE;
         }

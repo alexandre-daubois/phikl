@@ -2,6 +2,8 @@
 
 namespace Phpkl\Cache;
 
+use Phpkl\Exception\CorruptedCacheException;
+
 /**
  * @internal
  */
@@ -45,11 +47,28 @@ class Cache
         }
 
         $this->entries = unserialize($content, ['allowed_classes' => [self::class, Entry::class]]) ?: [];
+
+        $this->validate();
     }
 
     public function save(): void
     {
         file_put_contents($this->cacheFile, serialize($this->entries));
+    }
+
+    public function validate(): void
+    {
+        if ($this->entries === null) {
+            $this->load();
+
+            return;
+        }
+
+        foreach ($this->entries as $entry) {
+            if ($entry->hash !== \md5($entry->content)) {
+                throw new CorruptedCacheException($this->cacheFile);
+            }
+        }
     }
 
     public function getCacheFile(): string
