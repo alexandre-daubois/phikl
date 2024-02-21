@@ -4,6 +4,7 @@ namespace Phpkl\Tests\Cache;
 
 use Phpkl\Cache\Cache;
 use Phpkl\Cache\Entry;
+use Phpkl\Exception\CorruptedCacheException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -66,5 +67,68 @@ class CacheTest extends TestCase
         $cache->setCacheFile('test.cache');
 
         $this->assertSame('test.cache', $cache->getCacheFile());
+    }
+
+    public function testGuessCacheFileWithEnv(): void
+    {
+        $_ENV['PHIKL_CACHE_FILE'] = 'env.cache';
+
+        $cache = new Cache();
+        $this->assertSame('env.cache', $cache->getCacheFile());
+
+        unset($_ENV['PHIKL_CACHE_FILE']);
+    }
+
+    public function testGuessCacheFileWithServer(): void
+    {
+        $_SERVER['PHIKL_CACHE_FILE'] = 'server.cache';
+
+        $cache = new Cache();
+        $this->assertSame('server.cache', $cache->getCacheFile());
+
+        unset($_SERVER['PHIKL_CACHE_FILE']);
+    }
+
+    public function testSetCacheFileIsPrioritizedOverEnv(): void
+    {
+        $_ENV['PHIKL_CACHE_FILE'] = 'env.cache';
+
+        $cache = new Cache();
+        $cache->setCacheFile('test.cache');
+
+        $this->assertSame('test.cache', $cache->getCacheFile());
+
+        unset($_ENV['PHIKL_CACHE_FILE']);
+    }
+
+    public function testGuessCacheFileFallbacksOnDefaultPath(): void
+    {
+        $cache = new Cache();
+        $this->assertSame('.phikl.cache', $cache->getCacheFile());
+    }
+
+    public function testValidateOnValidCache(): void
+    {
+        $cache = new Cache();
+        $cache->add(new Entry('key', 'content', \md5('content')));
+        $cache->save();
+
+        $cache->validate();
+
+        unlink($cache->getCacheFile());
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testValidateOnInvalidCache(): void
+    {
+        $cache = new Cache();
+        $cache->add(new Entry('key', 'content', 'invalid'));
+        $cache->save();
+
+        $this->expectException(CorruptedCacheException::class);
+        $this->expectExceptionMessage('The cache file ".phikl.cache" seems corrupted and should be generated again with the `phikl dump` command.');
+
+        $cache->validate();
     }
 }

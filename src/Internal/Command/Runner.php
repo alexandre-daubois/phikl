@@ -2,7 +2,9 @@
 
 namespace Phpkl\Internal\Command;
 
+use Phpkl\Cache\Cache;
 use Phpkl\Exception\CorruptedCacheException;
+use Phpkl\Exception\EmptyCacheException;
 use Phpkl\Internal\PklDownloader;
 use Phpkl\Pkl;
 use Symfony\Component\Console\Command\Command;
@@ -95,13 +97,10 @@ final class Runner
     private static function dump(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
-        if ($input->getOption('cache-file')) {
-            Pkl::setCacheFile($input->getOption('cache-file'));
-        }
+        $cacheFile = $input->getOption('cache-file') ?? self::guessCacheFile();
 
         try {
-            $cacheFile = Pkl::dump();
+            $cacheFile = Pkl::dump($cacheFile);
 
             $io->success(sprintf('Cache file dumped to "%s"', $cacheFile));
 
@@ -120,21 +119,33 @@ final class Runner
     private static function validateCache(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $cacheFile = $input->getOption('cache-file') ?? self::guessCacheFile();
 
-        if ($input->getOption('cache-file')) {
-            Pkl::setCacheFile($input->getOption('cache-file'));
-        }
-
-        try {
-            Pkl::validateCache();
-
-            $io->success('Cache file is valid.');
-        } catch (CorruptedCacheException $e) {
-            $io->error($e->getMessage());
+        if (!file_exists($cacheFile)) {
+            $io->warning(sprintf('Cache file "%s" does not exist, it can be generated with the `phikl dump` command.', $cacheFile));
 
             return Command::FAILURE;
         }
 
+        try {
+            $cache = new Cache();
+            $cache->setCacheFile($cacheFile);
+            $cache->validate();
+
+            $io->success(sprintf('Cache file "%s" is valid.', $cacheFile));
+        } catch (CorruptedCacheException $e) {
+            $io->error($e->getMessage());
+
+            return Command::FAILURE;
+        } catch (EmptyCacheException $e) {
+            $io->warning($e->getMessage());
+        }
+
         return Command::SUCCESS;
+    }
+
+    private static function guessCacheFile(): string
+    {
+        return $_ENV['PHIKL_CACHE_FILE'] ?? $_SERVER['PHIKL_CACHE_FILE'] ?? '.phikl.cache';
     }
 }

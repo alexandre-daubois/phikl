@@ -49,4 +49,26 @@ user {
 }
 PKL, trim($process->getOutput()));
     }
+
+    public function testCanDump(): void
+    {
+        $process = new Process(['php', __DIR__.'/../phikl', 'dump', 'tests/Fixtures/simple.pkl']);
+        $process->mustRun();
+
+        $this->assertFileExists('.phikl.cache');
+        unlink('.phikl.cache');
+    }
+
+    public function testCanValidateCache(): void
+    {
+        $process = new Process(['php', __DIR__.'/../phikl', 'dump', 'tests/Fixtures/simple.pkl']);
+        $process->mustRun();
+
+        $process = new Process(['php', __DIR__.'/../phikl', 'validate-cache']);
+        $process->mustRun();
+
+        $this->assertMatchesRegularExpression('/(.*)\[OK] Cache file "(.+)" is valid/', $process->getOutput());
+
+        unlink('.phikl.cache');
+    }
 }

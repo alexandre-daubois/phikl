@@ -223,3 +223,16 @@ vendor/bin/phikl dump --cache-file=cache/pkl.cache
 ```
 
 If you do so, you must set the `PHIKL_CACHE_FILE` environment variable to the path of the cache file.
+
+If you need to validate a cache file, you can do so by using the `validate-cache` command:
+
+```bash
+vendor/bin/phikl validate-cache
+```
+
+Optionally, you can either set the `PHIKL_CACHE_FILE` environment variable or use the `--cache-file` option
+to define the cache file to validate:
+
+```bash
+vendor/bin/phikl validate-cache --cache-file=.cache/.phikl
+```

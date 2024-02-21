@@ -4,7 +4,6 @@ namespace Phpkl;
 
 use Phpkl\Cache\Cache;
 use Phpkl\Cache\Entry;
-use Phpkl\Exception\CorruptedCacheException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -132,7 +131,7 @@ class Pkl
      * The cache file is used to avoid calling the PKL CLI tool on every
      * `Pkl::eval()` call.
      */
-    public static function dump(): string
+    public static function dump(string $cacheFile): string
     {
         self::initExecutable();
 
@@ -150,7 +149,7 @@ class Pkl
         $dumpedContent = explode("\n---\n", $output);
         $dumpedContent = array_combine($filenames, $dumpedContent);
 
-        self::$cache = new Cache();
+        self::$cache = new Cache($cacheFile);
         foreach ($dumpedContent as $filename => $content) {
             self::$cache->add(new Entry($filename, trim($content), \md5($content)));
         }
@@ -158,27 +157,6 @@ class Pkl
         self::$cache->save();
 
         return self::$cache->getCacheFile();
-    }
-
-    /**
-     * @throws CorruptedCacheException
-     */
-    public static function validateCache(): void
-    {
-        self::$cache?->validate();
-    }
-
-    /**
-     * Sets the cache file to use, if different from the default one.
-     */
-    public static function setCacheFile(string $cacheFile): void
-    {
-        if (!is_writable(\dirname($cacheFile)) || (file_exists($cacheFile) && !is_writable($cacheFile))) {
-            throw new \RuntimeException(sprintf('The cache file "%s" is not writable.', $cacheFile));
-        }
-
-        self::$cache ??= new Cache();
-        self::$cache->setCacheFile($cacheFile);
     }
 
     /**
