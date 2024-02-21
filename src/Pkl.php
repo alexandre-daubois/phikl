@@ -42,7 +42,6 @@ class Pkl
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
         self::$cache ??= new Cache();
-
         if (null === $entry = self::$cache->get($module)) {
             self::initExecutable();
 
@@ -54,7 +53,8 @@ class Pkl
                 throw new \RuntimeException($process->getErrorOutput());
             }
 
-            $entry = new Entry($module, trim($process->getOutput()));
+            $content = trim($process->getOutput());
+            $entry = new Entry($module, $content, \md5($content));
         }
 
         $serializer = new Serializer([
@@ -127,7 +127,7 @@ class Pkl
 
         self::$cache = new Cache();
         foreach ($dumpedContent as $filename => $content) {
-            self::$cache->add(new Entry($filename, trim($content)));
+            self::$cache->add(new Entry($filename, trim($content), \md5($content)));
         }
 
         self::$cache->save();

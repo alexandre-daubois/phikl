@@ -13,6 +13,7 @@ class Entry
     public function __construct(
         public string $key,
         public string $content,
+        public string $hash,
     ) {
     }
 }

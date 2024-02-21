@@ -13,7 +13,7 @@ class CacheTest extends TestCase
     public function testGet(): void
     {
         $cache = new Cache();
-        $cache->add(new Entry('key', 'content'));
+        $cache->add(new Entry('key', 'content', 'hash'));
 
         $this->assertNotNull($cache->get('key'));
         $this->assertSame('content', $cache->get('key')->content);
@@ -25,14 +25,14 @@ class CacheTest extends TestCase
         $cache = new Cache();
         $this->assertNull($cache->get('key'));
 
-        $cache->add(new Entry('key', 'content'));
+        $cache->add(new Entry('key', 'content', 'hash'));
         $this->assertNotNull($cache->get('key'));
     }
 
     public function testClear(): void
     {
         $cache = new Cache();
-        $cache->add(new Entry('key', 'content'));
+        $cache->add(new Entry('key', 'content', 'hash'));
         $this->assertNotNull($cache->get('key'));
 
         $cache->clear();
@@ -42,7 +42,7 @@ class CacheTest extends TestCase
     public function testSave(): void
     {
         $cache = new Cache();
-        $cache->add(new Entry('key', 'content'));
+        $cache->add(new Entry('key', 'content', 'hash'));
         $cache->save();
 
         $this->assertFileExists($cache->getCacheFile());
