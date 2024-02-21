@@ -10,3 +10,4 @@ composer.lock
 .idea
 vendor
 .php-cs-fixer.cache
+.phikl.cache

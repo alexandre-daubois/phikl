@@ -3,7 +3,7 @@
 
 [![PHPUnit](https://github.com/alexandre-daubois/phikl/actions/workflows/ci.yaml/badge.svg)](https://github.com/alexandre-daubois/phikl/actions/workflows/ci.yaml)
 
-This is a PHP binding for Apple's PKL language. This library uses the official PKL CLI tool from Apple and
+Phikl (pronounced "_fickle_") is a PHP binding for Apple's PKL language. This library uses the official PKL CLI tool from Apple and
 provides a PHP interface to it.
 
 This library is still in development and is not yet ready for production use.
@@ -202,3 +202,37 @@ class User
 
 When casting, the `PklProperty` attribute will be used to map the property name in the PKL file to the property
 name in the PHP class.
+
+### Caching Pkl Evaluations for Performance
+
+You can cache the PKL modules to improve performance. This is especially useful when evaluating the same PKL file
+multiple times. You can use the `dump` command to dump the PKL module to a cache file. Phikl will then use the cache file automatically when evaluating a PKL file. If the PKL file is not found in the cache, Phikl will evaluate the PKL file on the go.
+
+**⚠️ Using Phikl with the cache avoids the PKL CLI tool to be executed to evaluate modules and should be done when deploying your application for better performances.**
+
+Here's an example of how to use the `dump` command:
+
+```bash
+vendor/bin/phikl dump
+```
+
+Phikl will go through all `.pkl` files of your project and dump them to the cache file. You can also specify the file if you want to use a custom location:
+
+```bash
+vendor/bin/phikl dump --cache-file=cache/pkl.cache
+```
+
+If you do so, you must set the `PHIKL_CACHE_FILE` environment variable to the path of the cache file.
+
+If you need to validate a cache file, you can do so by using the `validate-cache` command:
+
+```bash
+vendor/bin/phikl validate-cache
+```
+
+Optionally, you can either set the `PHIKL_CACHE_FILE` environment variable or use the `--cache-file` option
+to define the cache file to validate:
+
+```bash
+vendor/bin/phikl validate-cache --cache-file=.cache/.phikl
+```

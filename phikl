@@ -58,6 +58,7 @@ require __DIR__.'/vendor/autoload.php';
     ->addArgument('subcommand', InputArgument::REQUIRED, 'The subcommand to run')
     ->addArgument('args', InputArgument::IS_ARRAY, 'The arguments to pass to the subcommand')
     ->addOption('location', 'l', InputOption::VALUE_REQUIRED, 'Location to install pkl cli when installing it', 'vendor/bin')
+    ->addOption('cache-file', 'c', InputOption::VALUE_REQUIRED, 'The cache file to use')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {
             return Runner::run($input, $output);
