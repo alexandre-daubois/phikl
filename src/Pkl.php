@@ -130,8 +130,10 @@ class Pkl
      * Dumps all the .pkl files in the project and returns the cache file.
      * The cache file is used to avoid calling the PKL CLI tool on every
      * `Pkl::eval()` call.
+     *
+     * @return int the number of dumped files
      */
-    public static function dump(string $cacheFile): string
+    public static function dump(string $cacheFile): int
     {
         self::initExecutable();
 
@@ -156,7 +158,7 @@ class Pkl
 
         self::$cache->save();
 
-        return self::$cache->getCacheFile();
+        return \count($dumpedContent);
     }
 
     /**

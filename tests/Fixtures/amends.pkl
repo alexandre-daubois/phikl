@@ -1,0 +1,17 @@
+bird {
+    name = "Pigeon"
+    diet = "Seeds"
+    taxonomy {
+        kingdom = "Animalia"
+        clade = "Dinosauria"
+        order = "Columbiformes"
+    }
+}
+
+parrot = (bird) {
+    name = "Parrot"
+    diet = "Berries"
+    taxonomy {
+        order = "Psittaciformes"
+    }
+}

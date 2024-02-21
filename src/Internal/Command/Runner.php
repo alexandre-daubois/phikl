@@ -100,11 +100,11 @@ final class Runner
         $cacheFile = $input->getOption('cache-file') ?? self::guessCacheFile();
 
         try {
-            $cacheFile = Pkl::dump($cacheFile);
+            $count = Pkl::dump($cacheFile);
 
-            $io->success(sprintf('Cache file dumped to "%s"', $cacheFile));
+            $io->success(sprintf('%d files dumped to "%s" cache file.', $count, $cacheFile));
 
-            if ($input->getOption('cache-file') !== '.phikl.cache') {
+            if ($cacheFile !== '.phikl.cache') {
                 $io->caution('Make sure to declare the PHIKL_CACHE_FILE environment variable to use the cache file.');
             }
         } catch (\Exception $e) {

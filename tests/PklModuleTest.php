@@ -87,4 +87,30 @@ class PklModuleTest extends TestCase
         $this->assertSame('IL', $class->addressOfUser->state);
         $this->assertSame('Springfield', $class->addressOfUser->city);
     }
+
+    public function testAmends(): void
+    {
+        /** @var PklModule $module */
+        $module = Pkl::eval(__DIR__.'/Fixtures/amends.pkl');
+
+        $this->assertInstanceOf(PklModule::class, $module->get('bird'));
+        $this->assertInstanceOf(PklModule::class, $module->get('parrot'));
+
+        $this->assertInstanceOf(PklModule::class, $module->get('bird')->get('taxonomy'));
+        $this->assertInstanceOf(PklModule::class, $module->get('parrot')->get('taxonomy'));
+
+        $this->assertSame('Animalia', $module->get('bird')->get('taxonomy')->get('kingdom'));
+        $this->assertSame('Animalia', $module->get('parrot')->get('taxonomy')->get('kingdom'));
+
+        $this->assertSame('Dinosauria', $module->get('bird')->get('taxonomy')->get('clade'));
+        $this->assertSame('Dinosauria', $module->get('parrot')->get('taxonomy')->get('clade'));
+
+        // amended
+        $this->assertSame('Columbiformes', $module->get('bird')->get('taxonomy')->get('order'));
+        $this->assertSame('Psittaciformes', $module->get('parrot')->get('taxonomy')->get('order'));
+
+        // amended
+        $this->assertSame('Seeds', $module->get('bird')->get('diet'));
+        $this->assertSame('Berries', $module->get('parrot')->get('diet'));
+    }
 }
