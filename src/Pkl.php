@@ -55,7 +55,7 @@ class Pkl
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
         self::$cache ??= new PersistentCache();
-        if (self::$cache instanceof PersistentCache) {
+        if (self::$cache instanceof PersistentCache && self::$cacheEnabled) {
             self::$cache->load();
         }
 
@@ -70,8 +70,16 @@ class Pkl
                 throw new \RuntimeException($process->getErrorOutput());
             }
 
-            $content = trim($process->getOutput());
-            $entry = new Entry($content, \md5($content));
+            $content = \trim($process->getOutput());
+            $entry = new Entry($content, \md5($content), \time());
+
+            if (self::$cacheEnabled) {
+                // if we're in this condition, then it is a cache miss, thus the entry is
+                // automatically refreshed/added to the cache
+                if (self::$cache->set($module, $entry) && self::$cache instanceof PersistentCache) {
+                    self::$cache->save();
+                }
+            }
         }
 
         $serializer = new Serializer([
@@ -165,12 +173,20 @@ class Pkl
 
         self::$cache = new PersistentCache($cacheFile);
         foreach ($dumpedContent as $filename => $content) {
-            self::$cache->set($filename, new Entry(trim($content), \md5($content)));
+            self::$cache->set($filename, new Entry(trim($content), \md5($content), \time()));
         }
 
         self::$cache->save();
 
         return \count($dumpedContent);
+    }
+
+    /**
+     * Sets the cache to use. By default, the `PersistentCache` is used.
+     */
+    public static function setCache(CacheInterface $cache): void
+    {
+        self::$cache = $cache;
     }
 
     /**
