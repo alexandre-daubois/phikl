@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpkl\Tests\Fixtures;
+namespace Phikl\Tests\Fixtures;
 
-use Phpkl\Attribute\PklProperty;
+use Phikl\Attribute\PklProperty;
 
 class UserWithAttributes
 {

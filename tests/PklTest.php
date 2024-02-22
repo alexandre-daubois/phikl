@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpkl\Tests;
+namespace Phikl\Tests;
 
-use Phpkl\Cache\Cache;
-use Phpkl\Cache\Entry;
-use Phpkl\Pkl;
-use Phpkl\PklModule;
-use Phpkl\Tests\Fixtures\User;
+use Phikl\Cache\Cache;
+use Phikl\Cache\Entry;
+use Phikl\Pkl;
+use Phikl\PklModule;
+use Phikl\Tests\Fixtures\User;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

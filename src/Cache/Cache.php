@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpkl\Cache;
+namespace Phikl\Cache;
 
-use Phpkl\Exception\CorruptedCacheException;
-use Phpkl\Exception\EmptyCacheException;
+use Phikl\Exception\CorruptedCacheException;
+use Phikl\Exception\EmptyCacheException;
 
 /**
  * @internal

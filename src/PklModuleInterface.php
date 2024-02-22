@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl;
+namespace Phikl;
 
 interface PklModuleInterface
 {

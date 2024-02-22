@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpkl;
+namespace Phikl;
 
-use Phpkl\Attribute\PklProperty;
+use Phikl\Attribute\PklProperty;
 
 /**
  * @implements \ArrayAccess<string, scalar|PklModule>

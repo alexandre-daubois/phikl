@@ -32,7 +32,7 @@
         "phikl"
     ],
     "autoload": {
-        "psr-4": { "Phpkl\\": "src", "Phpkl\\Tests\\": "tests" }
+        "psr-4": { "Phikl\\": "src", "Phikl\\Tests\\": "tests" }
     },
     "scripts": {
         "test": "./vendor/bin/phpunit",

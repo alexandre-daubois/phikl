@@ -1,16 +1,21 @@
 <?php
 
-namespace Phpkl\Tests\Cache;
+namespace Phikl\Tests\Cache;
 
-use Phpkl\Cache\Cache;
-use Phpkl\Cache\Entry;
-use Phpkl\Exception\CorruptedCacheException;
+use Phikl\Cache\Cache;
+use Phikl\Cache\Entry;
+use Phikl\Exception\CorruptedCacheException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Cache::class)]
 class CacheTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        unset($_ENV['PHIKL_CACHE_FILE'], $_SERVER['PHIKL_CACHE_FILE']);
+    }
+
     public function testGet(): void
     {
         $cache = new Cache();

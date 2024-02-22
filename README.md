@@ -76,7 +76,7 @@ amountLearned = 13.37
 You can evaluate this code like this:
 
 ```php
-use Phpkl\Pkl;
+use Phikl\Pkl;
 
 $module = Pkl::eval('config/simple.pkl');
 
@@ -102,7 +102,7 @@ woodPigeon {
 ```
 
 ```php
-use Phpkl\Pkl;
+use Phikl\Pkl;
 
 $module = Pkl::eval('config/nested.pkl');
 
@@ -133,7 +133,7 @@ myUser {
 You can cast this to a `User` class like this:
 
 ```php
-use Phpkl\Pkl;
+use Phikl\Pkl;
 
 class User
 {
@@ -158,7 +158,7 @@ You can also pass `User::class` as the second argument to the `eval` method. Thi
 the given class. Beware that it returns an array indexed by the PKL instance name:
 
 ```php
-use Phpkl\Pkl;
+use Phikl\Pkl;
 
 // ...
 
@@ -186,7 +186,7 @@ myUser {
 You can define a `User` class like this:
 
 ```php
-use Phpkl\PklProperty;
+use Phikl\PklProperty;
 
 class User
 {

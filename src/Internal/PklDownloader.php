@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpkl\Internal;
+namespace Phikl\Internal;
 
-use Phpkl\Exception\PklCliAlreadyDownloadedException;
+use Phikl\Exception\PklCliAlreadyDownloadedException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;

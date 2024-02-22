@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl\Cache;
+namespace Phikl\Cache;
 
 /**
  * @internal

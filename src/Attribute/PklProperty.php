@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl\Attribute;
+namespace Phikl\Attribute;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class PklProperty

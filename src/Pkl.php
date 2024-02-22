@@ -1,9 +1,9 @@
 <?php
 
-namespace Phpkl;
+namespace Phikl;
 
-use Phpkl\Cache\Cache;
-use Phpkl\Cache\Entry;
+use Phikl\Cache\Cache;
+use Phikl\Cache\Entry;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;

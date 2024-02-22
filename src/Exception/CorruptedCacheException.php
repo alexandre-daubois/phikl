@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl\Exception;
+namespace Phikl\Exception;
 
 class CorruptedCacheException extends \RuntimeException
 {

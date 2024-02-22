@@ -1,8 +1,8 @@
 <?php
 
-namespace Phpkl\Tests;
+namespace Phikl\Tests;
 
-use Phpkl\Internal\Command\Runner;
+use Phikl\Internal\Command\Runner;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;

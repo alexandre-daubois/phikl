@@ -1,14 +1,14 @@
 <?php
 
-namespace Phpkl\Tests;
+namespace Phikl\Tests;
 
-use Phpkl\Pkl;
-use Phpkl\PklModule;
-use Phpkl\Tests\Fixtures\Address;
-use Phpkl\Tests\Fixtures\ClassWithAttributes;
-use Phpkl\Tests\Fixtures\User;
-use Phpkl\Tests\Fixtures\UserWithArrayAddress;
-use Phpkl\Tests\Fixtures\UserWithAttributes;
+use Phikl\Pkl;
+use Phikl\PklModule;
+use Phikl\Tests\Fixtures\Address;
+use Phikl\Tests\Fixtures\ClassWithAttributes;
+use Phikl\Tests\Fixtures\User;
+use Phikl\Tests\Fixtures\UserWithArrayAddress;
+use Phikl\Tests\Fixtures\UserWithAttributes;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

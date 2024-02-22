@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpkl\Tests\Fixtures;
+namespace Phikl\Tests\Fixtures;
 
 class UserWithArrayAddress
 {

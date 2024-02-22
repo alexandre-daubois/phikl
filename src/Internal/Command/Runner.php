@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpkl\Internal\Command;
+namespace Phikl\Internal\Command;
 
-use Phpkl\Cache\Cache;
-use Phpkl\Exception\CorruptedCacheException;
-use Phpkl\Exception\EmptyCacheException;
-use Phpkl\Internal\PklDownloader;
-use Phpkl\Pkl;
+use Phikl\Cache\Cache;
+use Phikl\Exception\CorruptedCacheException;
+use Phikl\Exception\EmptyCacheException;
+use Phikl\Internal\PklDownloader;
+use Phikl\Pkl;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
