@@ -47,36 +47,42 @@ class PersistentCacheTest extends TestCase
     {
         $cache = new PersistentCache();
 
-        $entry = new Entry('content', \md5('content'), 0);
-        $cache->set('key', $entry);
+        touch('corrupted.pkl', $time = \time());
 
-        $this->assertSame($entry, $cache->get('key'));
+        $entry = new Entry('content', \md5('content'), $time);
+        $cache->set('corrupted.pkl', $entry);
+        $this->assertSame($entry, $cache->get('corrupted.pkl'));
+
         $entry->hash = 'invalid';
 
         // not the same because entry was generated again
-        $this->assertNotSame($entry, $cache->get('key'));
-        $this->assertSame('content', $cache->get('key')->content);
-        $this->assertSame(\md5('content'), $cache->get('key')->hash);
+        $this->assertNotSame($entry, $cache->get('corrupted.pkl'));
+        $this->assertSame('content', $cache->get('corrupted.pkl')->content);
+        $this->assertSame(\md5('content'), $cache->get('corrupted.pkl')->hash);
+
+        unlink('corrupted.pkl');
     }
 
     public function testGetIsHitButEntryIsStalled(): void
     {
         $cache = new PersistentCache();
 
-        $entry = new Entry('content', \md5('content'), \time());
-        $cache->set('foo.pkl', $entry);
+        touch('stalled.pkl', $time = \time());
 
-        $this->assertSame($entry, $cache->get('foo.pkl'));
+        $entry = new Entry('content', \md5('content'), $time);
 
-        // touch file to simulate a change
-        touch('foo.pkl', \time() + 1);
+        $cache->set('stalled.pkl', $entry);
+        $this->assertSame($entry, $cache->get('stalled.pkl'));
+
+        // simulate a file touch
+        $entry->timestamp -= 10;
 
         // not the same because entry was generated again
-        $this->assertNotSame($entry, $cache->get('foo.pkl'));
-        $this->assertSame('content', $cache->get('foo.pkl')->content);
-        $this->assertSame(\md5('content'), $cache->get('foo.pkl')->hash);
+        $this->assertNotSame($entry, $cache->get('stalled.pkl'));
+        $this->assertSame('content', $cache->get('stalled.pkl')->content);
+        $this->assertSame(\md5('content'), $cache->get('stalled.pkl')->hash);
 
-        unlink('foo.pkl');
+        unlink('stalled.pkl');
     }
 
     public function testSet(): void
@@ -194,6 +200,20 @@ class PersistentCacheTest extends TestCase
         $this->assertSame('.phikl.cache', $cache->getCacheFile());
     }
 
+    public function testLoadWithCorruptedCacheFile(): void
+    {
+        $cache = new PersistentCache();
+        $cache->set('key', new Entry('content', 'hash', 0));
+        $cache->save();
+
+        $cacheFile = $cache->getCacheFile();
+        file_put_contents($cacheFile, 'invalid');
+
+        $cache->load();
+        $this->assertNull($cache->get('key'));
+        $this->assertFileDoesNotExist($cacheFile);
+    }
+
     public function testSetCacheFile(): void
     {
         $cache = new PersistentCache();
@@ -260,7 +280,7 @@ class PersistentCacheTest extends TestCase
         $cache->save();
 
         $this->expectException(CorruptedCacheException::class);
-        $this->expectExceptionMessage('The cache file ".phikl.cache" seems corrupted and should be generated again with the `phikl dump` command.');
+        $this->expectExceptionMessage('The cache file ".phikl.cache" seems corrupted and should be generated again with the `phikl warmup` command.');
 
         $cache->validate();
     }

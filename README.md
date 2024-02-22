@@ -208,20 +208,20 @@ name in the PHP class.
 ## Caching
 
 You can (**and should**) cache the PKL modules to improve performance. This is especially useful when evaluating the same PKL file
-multiple times. You can use the `dump` command to dump the PKL module to a cache file. Phikl will then use the cache file automatically when evaluating a PKL file. If the PKL file is not found in the cache, Phikl will evaluate the PKL file on the go.
+multiple times. You can use the `warmup` command to dump the PKL modules to a cache file. Phikl will then use the cache file automatically when evaluating a PKL file. If the PKL file is not found in the cache, Phikl will evaluate the PKL file on the go.
 
 **⚠️ Using Phikl with the cache avoids the PKL CLI tool to be executed to evaluate modules and should be done when deploying your application for better performances.**
 
 Phikl will go through all `.pkl` files of your project and dump them to the cache file.
 
-Here's an example of how to use the `dump` command:
+Here's an example of how to use the `warmup` command:
 
 ```bash
-vendor/bin/phikl dump
+vendor/bin/phikl warmup
 
 # you can also specify the file if you want to use a custom location
 # don't forget to set the `PHIKL_CACHE_FILE` environment variable
-vendor/bin/phikl dump --cache-file=cache/pkl.cache
+vendor/bin/phikl warmup --cache-file=cache/pkl.cache
 ```
 
 If you need to validate a cache file, you can do so by using the `validate-cache` command:
@@ -237,7 +237,7 @@ vendor/bin/phikl validate-cache --cache-file=.cache/.phikl
 Here are a few things to note about Phikl cache:
 
 - You can disable the cache by calling `Pkl::toggleCache(false)`, which is useful for development but highly discouraged in production
-- Phikl will automatically invalidate the cache if the PKL file is modified or if the cache was generated with a different version of the Pkl CLI tool
+- Phikl will automatically refresh the cache if a PKL module is modified since last warmup
 - Any corrupted cache entry will be automatically refreshed
 
 If you have your own cache system, you can use the `Pkl::setCache()` method to set the cache system to use. You can pass it any instance of compliant PSR-16 cache system implementing `Psr\SimpleCache\CacheInterface`. This is useful you want to use, for example, a Redis server as a cache system for your Pkl modules.

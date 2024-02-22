@@ -151,9 +151,9 @@ class Pkl
      * The cache file is used to avoid calling the PKL CLI tool on every
      * `Pkl::eval()` call.
      *
-     * @return int the number of dumped files
+     * @return int the number of warmed up files
      */
-    public static function dump(string $cacheFile): int
+    public static function warmup(string $cacheFile): int
     {
         self::initExecutable();
 
