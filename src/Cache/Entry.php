@@ -7,11 +7,7 @@ namespace Phikl\Cache;
  */
 class Entry
 {
-    /**
-     * @param string $key Likely a file path
-     */
     public function __construct(
-        public string $key,
         public string $content,
         public string $hash,
     ) {

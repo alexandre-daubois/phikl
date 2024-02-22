@@ -2,8 +2,9 @@
 
 namespace Phikl;
 
-use Phikl\Cache\Cache;
 use Phikl\Cache\Entry;
+use Phikl\Cache\PersistentCache;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -20,7 +21,7 @@ use Symfony\Component\Serializer\Serializer;
 class Pkl
 {
     private static string $executable;
-    private static ?Cache $cache = null;
+    private static ?CacheInterface $cache = null;
     private static bool $cacheEnabled = true;
 
     /**
@@ -46,7 +47,11 @@ class Pkl
      */
     public static function eval(string $module, string $toClass = PklModule::class): array|PklModule
     {
-        self::$cache ??= new Cache();
+        self::$cache ??= new PersistentCache();
+        if (self::$cache instanceof PersistentCache) {
+            self::$cache->load();
+        }
+
         if ((null === $entry = self::$cache->get($module)) || !self::$cacheEnabled) {
             self::initExecutable();
 
@@ -59,7 +64,7 @@ class Pkl
             }
 
             $content = trim($process->getOutput());
-            $entry = new Entry($module, $content, \md5($content));
+            $entry = new Entry($content, \md5($content));
         }
 
         $serializer = new Serializer([
@@ -151,9 +156,9 @@ class Pkl
         $dumpedContent = explode("\n---\n", $output);
         $dumpedContent = array_combine($filenames, $dumpedContent);
 
-        self::$cache = new Cache($cacheFile);
+        self::$cache = new PersistentCache($cacheFile);
         foreach ($dumpedContent as $filename => $content) {
-            self::$cache->add(new Entry($filename, trim($content), \md5($content)));
+            self::$cache->set($filename, new Entry(trim($content), \md5($content)));
         }
 
         self::$cache->save();
