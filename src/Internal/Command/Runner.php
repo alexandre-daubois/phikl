@@ -2,7 +2,7 @@
 
 namespace Phikl\Internal\Command;
 
-use Phikl\Cache\Cache;
+use Phikl\Cache\PersistentCache;
 use Phikl\Exception\CorruptedCacheException;
 use Phikl\Exception\EmptyCacheException;
 use Phikl\Internal\PklDownloader;
@@ -128,7 +128,7 @@ final class Runner
         }
 
         try {
-            $cache = new Cache();
+            $cache = new PersistentCache();
             $cache->setCacheFile($cacheFile);
             $cache->validate();
 

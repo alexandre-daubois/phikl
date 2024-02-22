@@ -2,8 +2,8 @@
 
 namespace Phikl\Tests;
 
-use Phikl\Cache\Cache;
 use Phikl\Cache\Entry;
+use Phikl\Cache\PersistentCache;
 use Phikl\Pkl;
 use Phikl\PklModule;
 use Phikl\Tests\Fixtures\User;
@@ -83,8 +83,8 @@ class PklTest extends TestCase
     {
         unset($_ENV['PKL_CLI_BIN']);
 
-        $cache = new Cache();
-        $cache->add(new Entry('foo.pkl', <<<JSON
+        $cache = new PersistentCache();
+        $cache->set('foo.pkl', new Entry(<<<JSON
 {
     "name": "bar"
 }
