@@ -35,8 +35,8 @@ final class Runner
             return self::version($input, $output);
         } elseif ($input->getArgument('subcommand') === 'eval') {
             return self::eval($input, $output);
-        } elseif ($input->getArgument('subcommand') === 'dump') {
-            return self::dump($input, $output);
+        } elseif ($input->getArgument('subcommand') === 'warmup') {
+            return self::warmup($input, $output);
         } elseif ($input->getArgument('subcommand') === 'validate-cache') {
             return self::validateCache($input, $output);
         }
@@ -101,15 +101,15 @@ final class Runner
         return Command::SUCCESS;
     }
 
-    private static function dump(InputInterface $input, OutputInterface $output): int
+    private static function warmup(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $cacheFile = $input->getOption('cache-file') ?? self::guessCacheFile();
 
         try {
-            $count = Pkl::dump($cacheFile);
+            $count = Pkl::warmup($cacheFile);
 
-            $io->success(sprintf('%d files dumped to "%s" cache file.', $count, $cacheFile));
+            $io->success(sprintf('%d files warmed up to "%s" cache file.', $count, $cacheFile));
 
             if ($cacheFile !== '.phikl.cache') {
                 $io->caution('Make sure to declare the PHIKL_CACHE_FILE environment variable to use the cache file.');
@@ -129,7 +129,7 @@ final class Runner
         $cacheFile = $input->getOption('cache-file') ?? self::guessCacheFile();
 
         if (!file_exists($cacheFile)) {
-            $io->warning(sprintf('Cache file "%s" does not exist, it can be generated with the `phikl dump` command.', $cacheFile));
+            $io->warning(sprintf('Cache file "%s" does not exist, it can be generated with the `phikl warmup` command.', $cacheFile));
 
             return Command::FAILURE;
         }

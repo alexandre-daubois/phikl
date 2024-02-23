@@ -13,13 +13,7 @@ use Phikl\Exception\CorruptedCacheException;
 use Phikl\Exception\EmptyCacheException;
 use Psr\SimpleCache\CacheInterface;
 
-/**
- * @internal
- *
- * Todo: automatically add cache misses to the cache
- * Todo: automatic refresh of staled cache entries
- */
-class PersistentCache implements CacheInterface
+final class PersistentCache implements CacheInterface
 {
     private const DEFAULT_CACHE_FILE = '.phikl.cache';
 
@@ -35,7 +29,7 @@ class PersistentCache implements CacheInterface
     /**
      * This gets an entry from the cache. If the entry is not found, it returns the default value.
      * If the default value is not an instance of Entry, it throws an exception.
-     * If the entry is found, but it is corrupted, it tries to restore it.
+     * If the entry is found, but it is corrupted or stalled, it is refreshed.
      *
      * @throws \InvalidArgumentException
      */
@@ -45,11 +39,14 @@ class PersistentCache implements CacheInterface
         $isHit = $entry !== null;
 
         if ($isHit) {
-            if ($entry->hash !== \md5($entry->content)) {
-                // cache seems corrupted, try to restore it
+            $actualHash = \md5($entry->content);
+            $mtime = @\filemtime($key);
+
+            if ($entry->hash !== $actualHash || $mtime === false || $entry->timestamp < $mtime) {
+                // cache is either corrupted or outdated, refresh it
                 unset($this->entries[$key]);
 
-                $entry = new Entry($entry->content, \md5($entry->content));
+                $entry = new Entry($entry->content, $actualHash, \time());
                 $this->set($key, $entry);
 
                 $this->save();
@@ -165,7 +162,16 @@ class PersistentCache implements CacheInterface
             return;
         }
 
-        $this->entries = unserialize($content, ['allowed_classes' => [self::class, Entry::class]]) ?: [];
+        $unserialized = @unserialize($content, ['allowed_classes' => [self::class, Entry::class]]);
+        if ($unserialized === false) {
+            // the cache is unreadable, erase everything
+            $this->entries = null;
+            @unlink($cacheFile);
+
+            return;
+        }
+
+        $this->entries = $unserialized;
     }
 
     /**

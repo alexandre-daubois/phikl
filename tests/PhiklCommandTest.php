@@ -52,7 +52,7 @@ PKL, trim($process->getOutput()));
 
     public function testCanDump(): void
     {
-        $process = new Process(['php', __DIR__.'/../phikl', 'dump', 'tests/Fixtures/simple.pkl']);
+        $process = new Process(['php', __DIR__.'/../phikl', 'warmup', 'tests/Fixtures/simple.pkl']);
         $process->mustRun();
 
         $this->assertFileExists('.phikl.cache');
@@ -61,7 +61,7 @@ PKL, trim($process->getOutput()));
 
     public function testCanValidateCache(): void
     {
-        $process = new Process(['php', __DIR__.'/../phikl', 'dump', 'tests/Fixtures/simple.pkl']);
+        $process = new Process(['php', __DIR__.'/../phikl', 'warmup', 'tests/Fixtures/simple.pkl']);
         $process->mustRun();
 
         $process = new Process(['php', __DIR__.'/../phikl', 'validate-cache']);

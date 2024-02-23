@@ -36,7 +36,7 @@
         "psr-4": { "Phikl\\": "src", "Phikl\\Tests\\": "tests" }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit",
+        "test": "./vendor/bin/phpunit --display-warnings",
         "cs": "./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --diff --allow-risky=yes",
         "stan": "vendor/bin/phpstan analyse src tests -l 8"
     },

@@ -16,6 +16,18 @@ class PklTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         $_ENV['PKL_CLI_BIN'] = __DIR__.'/../../vendor/bin/pkl';
+        Pkl::setCache(new PersistentCache());
+    }
+
+    protected function setUp(): void
+    {
+        $cache = new PersistentCache();
+        Pkl::setCache($cache);
+    }
+
+    protected function tearDown(): void
+    {
+        @unlink('.phil.cache');
     }
 
     public function testEvalSimpleFile(): void
@@ -27,6 +39,33 @@ class PklTest extends TestCase
         $this->assertSame(100, $result->get('attendants'));
         $this->assertTrue($result->get('isInteractive'));
         $this->assertSame(13.37, $result->get('amountLearned'));
+    }
+
+    public function testEvalCachesOnCacheMiss(): void
+    {
+        $cache = new PersistentCache();
+        Pkl::setCache($cache);
+
+        $this->assertFalse($cache->has(__DIR__.'/Fixtures/simple.pkl'));
+        Pkl::eval(__DIR__.'/Fixtures/simple.pkl');
+
+        $cache->clear();
+        $cache->load();
+
+        $this->assertTrue($cache->has(__DIR__.'/Fixtures/simple.pkl'));
+
+        unlink($cache->getCacheFile());
+    }
+
+    public function testEvalDoesntCacheOnCacheMissWithDisabledCache(): void
+    {
+        $cache = new PersistentCache();
+        Pkl::setCache($cache);
+        Pkl::toggleCache(false);
+
+        $this->assertFalse($cache->has(__DIR__.'/Fixtures/simple.pkl'));
+        Pkl::eval(__DIR__.'/Fixtures/simple.pkl');
+        $this->assertFalse($cache->has(__DIR__.'/Fixtures/simple.pkl'));
     }
 
     public function testEvalMultipleConfigFiles(): void
@@ -73,6 +112,8 @@ class PklTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Pkl CLI is not installed. Make sure to set the PKL_CLI_BIN environment variable or run the `phikl install` command.');
 
+        // ensure it is a cache miss
+        Pkl::setCache(new PersistentCache());
         Pkl::eval(__DIR__.'/Fixtures/simple.pkl');
     }
 
@@ -88,7 +129,7 @@ class PklTest extends TestCase
 {
     "name": "bar"
 }
-JSON, 'bar'));
+JSON, 'bar', 0));
         $cache->save();
 
         // pkl cli tool must not be called
