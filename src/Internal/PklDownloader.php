@@ -12,8 +12,6 @@ namespace Phikl\Internal;
 use Phikl\Exception\PklCliAlreadyDownloadedException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @internal
@@ -21,11 +19,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class PklDownloader
 {
     private const PKL_CLI_VERSION = '0.25.2';
-    private HttpClientInterface $httpClient;
 
     public function __construct()
     {
-        $this->httpClient = HttpClient::create();
+        if (!\extension_loaded('curl')) {
+            throw new \RuntimeException('The curl extension is required to download the Pkl CLI. You can either install it or download the Pkl CLI manually.');
+        }
     }
 
     public function alreadyDownloaded(string $location = 'vendor/bin'): bool
@@ -43,25 +42,10 @@ final class PklDownloader
             throw new \RuntimeException('32-bit systems are not supported by Pkl CLI.');
         }
 
-        $progressBar = new ProgressBar($io);
-        // set the progress bar format to display how many megabytes are downloaded
-        $progressBar->setFormat('verbose');
-
         $downloadUrl = $this->buildDownloadUrl();
-        $response = $this->httpClient->request('GET', $downloadUrl, [
-            'on_progress' => function ($dlNow, $dlSize) use ($progressBar) {
-                // set the progress bar format to display how many megabytes are downloaded
-                $progressBar->setProgress((int) ($dlNow / 1e+6));
-                $progressBar->setMaxSteps((int) ($dlSize / 1e+6));
-            },
-        ]);
+        $pklCliPath = $location.\DIRECTORY_SEPARATOR.'pkl';
 
-        if (!is_writable($location) && !mkdir($location, 0755, true) && !is_dir($location)) {
-            throw new \RuntimeException(sprintf('Pkl CLI could not be installed to %s, ensure the directory is writable.', $location));
-        }
-
-        $pklCliPath = $location.'/pkl';
-        file_put_contents($pklCliPath, $response->getContent());
+        $this->curlUrlToFile($downloadUrl, $location, 'pkl', $io);
 
         if ($this->isMacOs() || $this->isLinux()) {
             chmod($pklCliPath, 0755);
@@ -78,6 +62,47 @@ final class PklDownloader
         }
     }
 
+    private function curlUrlToFile(string $url, string $location, string $fileName, SymfonyStyle $io): void
+    {
+        $curlHandle = \curl_init($url);
+        \assert($curlHandle !== false);
+
+        $file = \fopen($location.\DIRECTORY_SEPARATOR.$fileName, 'w');
+
+        if (!is_writable($location) && !mkdir($location, 0755, true) && !is_dir($location) || $file === false) {
+            throw new \RuntimeException(sprintf('Pkl CLI could not be installed to %s, ensure the location is writable.', $location));
+        }
+
+        $progressBar = new ProgressBar($io);
+
+        \curl_setopt($curlHandle, \CURLOPT_FILE, $file);
+        \curl_setopt($curlHandle, \CURLOPT_FOLLOWLOCATION, true);
+        \curl_setopt($curlHandle, \CURLOPT_NOPROGRESS, false);
+        \curl_setopt($curlHandle, \CURLOPT_PROGRESSFUNCTION, function (
+            mixed $resource,
+            int $downloadSize,
+            int $downloaded,
+            int $uploadSize,
+            int $uploaded
+        ) use ($progressBar): void {
+            if ($downloadSize > 0) {
+                $progressBar->setMaxSteps($downloadSize);
+                $progressBar->setProgress($downloaded);
+            }
+        });
+
+        \curl_exec($curlHandle);
+
+        if (\curl_errno($curlHandle)) {
+            \fclose($file);
+
+            throw new \RuntimeException(\curl_error($curlHandle));
+        }
+
+        \fclose($file);
+        \curl_close($curlHandle);
+    }
+
     private function buildDownloadUrl(): string
     {
         $downloadUrl = 'https://github.com/apple/pkl/releases/download/'.self::PKL_CLI_VERSION.'/pkl-';
@@ -87,7 +112,7 @@ final class PklDownloader
             return $downloadUrl.($this->isArmArch() ? 'linux-aarch64' : 'linux-amd64');
         }
 
-        return 'https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-java/0.25.2/pkl-cli-java-'.self::PKL_CLI_VERSION.'.jar';
+        return 'https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-java/'.self::PKL_CLI_VERSION.'/pkl-cli-java-'.self::PKL_CLI_VERSION.'.jar';
     }
 
     private function isArmArch(): bool
