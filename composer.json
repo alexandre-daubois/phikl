@@ -30,7 +30,8 @@
         "sort-packages": true
     },
     "suggest": {
-        "ext-apcu": "To use the APCu cache backend"
+        "ext-apcu": "To use the APCu cache backend",
+        "ext-memcached": "To use the Memcached cache backend"
     },
     "bin": [
         "phikl"

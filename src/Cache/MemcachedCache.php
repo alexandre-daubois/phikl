@@ -4,20 +4,24 @@ namespace Phikl\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 
-/**
- * Simple implementation of the PSR-16 CacheInterface using APCu
- * for the Pkl modules evaluation cache.
- */
-final class ApcuCache implements CacheInterface
+final class MemcachedCache implements CacheInterface
 {
-    public function __construct()
+    private \Memcached $memcached;
+
+    /**
+     * @param MemcachedServer|array<MemcachedServer> $servers
+     */
+    public function __construct(MemcachedServer|array $servers)
     {
-        if (!\extension_loaded('apcu')) {
-            throw new \RuntimeException('APCu extension is not loaded');
+        if (!\extension_loaded('memcached')) {
+            throw new \RuntimeException('Memcached extension is not loaded');
         }
 
-        if (!\function_exists('apcu_enabled') || !apcu_enabled()) {
-            throw new \RuntimeException('APCu is not enabled');
+        $servers = \is_array($servers) ? $servers : [$servers];
+
+        $this->memcached = new \Memcached('phikl');
+        foreach ($servers as $server) {
+            $this->memcached->addServer($server->host, $server->port);
         }
     }
 
@@ -30,8 +34,8 @@ final class ApcuCache implements CacheInterface
             throw new \InvalidArgumentException('Default value must be null or an instance of Entry');
         }
 
-        $entry = apcu_fetch($key);
-        if ($entry === false) {
+        $entry = $this->memcached->get($key);
+        if ($this->memcached->getResultCode() === \Memcached::RES_NOTFOUND) {
             return $default;
         }
 
@@ -49,7 +53,7 @@ final class ApcuCache implements CacheInterface
             return false;
         }
 
-        return apcu_store(
+        return $this->memcached->set(
             $key,
             serialize($value),
             $ttl instanceof \DateInterval ? (int) ($ttl->format('U')) - \time() : ($ttl ?? 0)
@@ -58,7 +62,7 @@ final class ApcuCache implements CacheInterface
 
     public function delete(string $key): bool
     {
-        return apcu_delete($key);
+        return $this->memcached->delete($key);
     }
 
     /**
@@ -66,7 +70,7 @@ final class ApcuCache implements CacheInterface
      */
     public function clear(): bool
     {
-        return apcu_clear_cache();
+        return $this->memcached->flush();
     }
 
     /**
@@ -115,6 +119,6 @@ final class ApcuCache implements CacheInterface
 
     public function has(string $key): bool
     {
-        return apcu_exists($key);
+        return $this->memcached->get($key) !== false;
     }
 }
