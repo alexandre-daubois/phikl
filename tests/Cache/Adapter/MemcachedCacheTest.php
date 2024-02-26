@@ -1,25 +1,33 @@
 <?php
 
-namespace Cache;
+namespace Phikl\Tests\Cache\Adapter;
 
-use Phikl\Cache\ApcuCache;
+use Phikl\Cache\Adapter\MemcachedCacheAdapter;
+use Phikl\Cache\Adapter\MemcachedServer;
 use Phikl\Cache\Entry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
-#[RequiresPhpExtension('apcu')]
-#[CoversClass(ApcuCache::class)]
-class ApcuCacheTest extends TestCase
+#[RequiresPhpExtension('memcached')]
+#[CoversClass(MemcachedCacheAdapter::class)]
+class MemcachedCacheTest extends TestCase
 {
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        apcu_clear_cache();
+        if (false === \fsockopen('localhost', 11211)) {
+            $this->markTestSkipped('Memcached is not running');
+        }
+    }
+
+    private function createMemcachedCache(): MemcachedCacheAdapter
+    {
+        return new MemcachedCacheAdapter(new MemcachedServer('localhost', 11211));
     }
 
     public function testGetWithDefaultOtherThanEntryInstance(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Default value must be null or an instance of Entry');
@@ -29,7 +37,7 @@ class ApcuCacheTest extends TestCase
 
     public function testGetReturnsDefaultIfKeyDoesNotExist(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry = new Entry('content', 'hash', 0);
 
@@ -40,7 +48,7 @@ class ApcuCacheTest extends TestCase
 
     public function testGetOnValidSetEntry(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry = new Entry('content', 'hash', $time = \time());
 
@@ -55,14 +63,14 @@ class ApcuCacheTest extends TestCase
 
     public function testSetReturnsFalseOnInvalidEntry(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $this->assertFalse($cache->set('key', 'invalid'));
     }
 
     public function testDeleteEntry(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry = new Entry('content', 'hash', 0);
         $cache->set('key', $entry);
@@ -73,7 +81,7 @@ class ApcuCacheTest extends TestCase
 
     public function testClear(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry = new Entry('content', 'hash', 0);
         $cache->set('key', $entry);
@@ -84,7 +92,7 @@ class ApcuCacheTest extends TestCase
 
     public function testGetSetMultiple(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry1 = new Entry('content1', 'hash1', 0);
         $entry2 = new Entry('content2', 'hash2', 0);
@@ -117,7 +125,7 @@ class ApcuCacheTest extends TestCase
 
     public function testDeleteMultiple(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry1 = new Entry('content1', 'hash1', 0);
         $entry2 = new Entry('content2', 'hash2', 0);
@@ -137,7 +145,7 @@ class ApcuCacheTest extends TestCase
 
     public function testHas(): void
     {
-        $cache = new ApcuCache();
+        $cache = $this->createMemcachedCache();
 
         $entry = new Entry('content', 'hash', 0);
         $cache->set('key', $entry);

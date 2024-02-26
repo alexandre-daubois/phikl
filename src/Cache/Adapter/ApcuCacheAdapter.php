@@ -1,14 +1,14 @@
 <?php
 
-namespace Phikl\Cache;
+namespace Phikl\Cache\Adapter;
 
-use Psr\SimpleCache\CacheInterface;
+use Phikl\Cache\Entry;
 
 /**
  * Simple implementation of the PSR-16 CacheInterface using APCu
  * for the Pkl modules evaluation cache.
  */
-final class ApcuCache implements CacheInterface
+final class ApcuCacheAdapter extends AbstractRemoteCacheAdapter
 {
     public function __construct()
     {
@@ -67,50 +67,6 @@ final class ApcuCache implements CacheInterface
     public function clear(): bool
     {
         return apcu_clear_cache();
-    }
-
-    /**
-     * @param iterable<non-empty-string> $keys
-     *
-     * @return array<non-empty-string, Entry|null>
-     */
-    public function getMultiple(iterable $keys, mixed $default = null): array
-    {
-        $entries = [];
-        foreach ($keys as $key) {
-            $entries[$key] = $this->get($key, $default);
-        }
-
-        return $entries;
-    }
-
-    /**
-     * @param iterable<string, Entry> $values
-     */
-    public function setMultiple(iterable $values, \DateInterval|int|null $ttl = null): bool
-    {
-        foreach ($values as $key => $value) {
-            if (!$this->set($key, $value, $ttl)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param iterable<string> $keys
-     */
-    public function deleteMultiple(iterable $keys): bool
-    {
-        $success = true;
-        foreach ($keys as $key) {
-            if (!$this->delete($key)) {
-                $success = false;
-            }
-        }
-
-        return $success;
     }
 
     public function has(string $key): bool
