@@ -13,6 +13,10 @@ use Phikl\Exception\CorruptedCacheException;
 use Phikl\Exception\EmptyCacheException;
 use Psr\SimpleCache\CacheInterface;
 
+/**
+ * Simple implementation of the PSR-16 CacheInterface using a file for
+ * Pkl modules evaluation cache.
+ */
 final class PersistentCache implements CacheInterface
 {
     private const DEFAULT_CACHE_FILE = '.phikl.cache';

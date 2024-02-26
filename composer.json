@@ -29,6 +29,9 @@
         },
         "sort-packages": true
     },
+    "suggest": {
+        "ext-apcu": "To use the APCu cache backend"
+    },
     "bin": [
         "phikl"
     ],
