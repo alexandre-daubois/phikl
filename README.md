@@ -208,9 +208,13 @@ name in the PHP class.
 ## Caching
 
 You can (**and should**) cache the PKL modules to improve performance. This is especially useful when evaluating the same PKL file
-multiple times. You can use the `warmup` command to dump the PKL modules to a cache file. Phikl will then use the cache file automatically when evaluating a PKL file. If the PKL file is not found in the cache, Phikl will evaluate the PKL file on the go.
+multiple times.
 
 **⚠️ Using Phikl with the cache avoids the PKL CLI tool to be executed to evaluate modules and should be done when deploying your application for better performances.**
+
+### Warmup the Cache
+
+You can use the `warmup` command to dump the PKL modules to a cache file by default. Phikl will then use the cache file automatically when evaluating a PKL file. If the PKL file is not found in the cache, Phikl will evaluate the PKL file on the go.
 
 Phikl will go through all `.pkl` files of your project and dump them to the cache file.
 
@@ -240,4 +244,11 @@ Here are a few things to note about Phikl cache:
 - Phikl will automatically refresh the cache if a PKL module is modified since last warmup
 - Any corrupted cache entry will be automatically refreshed
 
+### Cache Backends
+
 If you have your own cache system, you can use the `Pkl::setCache()` method to set the cache system to use. You can pass it any instance of compliant PSR-16 cache system implementing `Psr\SimpleCache\CacheInterface`. This is useful you want to use, for example, a Redis server as a cache system for your Pkl modules.
+
+Phikl comes with the following cache backends:
+
+ * `PersistentCache`, which is the default one used by Phikl. It uses a file to store the cache.
+ * `APCuCache`, which uses the APCu extension to store the cache in memory.
