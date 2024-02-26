@@ -58,7 +58,9 @@ final class MemcachedCacheAdapter extends AbstractRemoteCacheAdapter
         return $this->memcached->set(
             $key,
             serialize($value),
-            $ttl instanceof \DateInterval ? (int) ($ttl->format('U')) - \time() : ($ttl ?? 0)
+            $ttl instanceof \DateInterval ?
+                (int) ((new \DateTimeImmutable())->add($ttl)->format('U') - \time())
+                : ($ttl ?? 0)
         );
     }
 

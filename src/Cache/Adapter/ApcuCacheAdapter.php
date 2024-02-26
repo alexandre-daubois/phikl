@@ -52,7 +52,9 @@ final class ApcuCacheAdapter extends AbstractRemoteCacheAdapter
         return apcu_store(
             $key,
             serialize($value),
-            $ttl instanceof \DateInterval ? (int) ($ttl->format('U')) - \time() : ($ttl ?? 0)
+            $ttl instanceof \DateInterval ?
+                (int) ((new \DateTimeImmutable())->add($ttl)->format('U') - \time())
+                : ($ttl ?? 0)
         );
     }
 
