@@ -251,5 +251,5 @@ If you have your own cache system, you can use the `Pkl::setCache()` method to s
 Phikl comes with the following cache backends:
 
  * `PersistentCache`, which is the default one used by Phikl. It uses a file to store the cache ;
- * `ApcuCache`, which uses the APCu extension to store the cache in memory ;
- * `MemcachedCache`, which uses the Memcached extension to store the cache in memory.
+ * `ApcuCacheAdapter`, which uses the APCu extension to store the cache in memory ;
+ * `MemcachedCacheAdapter`, which uses the Memcached extension to store the cache in memory.

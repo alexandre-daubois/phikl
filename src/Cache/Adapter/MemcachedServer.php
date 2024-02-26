@@ -1,6 +1,6 @@
 <?php
 
-namespace Phikl\Cache;
+namespace Phikl\Cache\Adapter;
 
 final readonly class MemcachedServer
 {

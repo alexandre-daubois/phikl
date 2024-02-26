@@ -1,17 +1,19 @@
 <?php
 
-namespace Phikl\Cache;
+namespace Phikl\Cache\Adapter;
 
-use Psr\SimpleCache\CacheInterface;
+use Phikl\Cache\Entry;
 
-final class MemcachedCache implements CacheInterface
+final class MemcachedCacheAdapter extends AbstractRemoteCacheAdapter
 {
     private \Memcached $memcached;
 
     /**
      * @param MemcachedServer|array<MemcachedServer> $servers
+     * @param string                                 $persistentId the persistent_id is used to create a unique connection
+     *                                                             pool for the specified servers
      */
-    public function __construct(MemcachedServer|array $servers)
+    public function __construct(MemcachedServer|array $servers, string $persistentId = 'phikl')
     {
         if (!\extension_loaded('memcached')) {
             throw new \RuntimeException('Memcached extension is not loaded');
@@ -19,7 +21,7 @@ final class MemcachedCache implements CacheInterface
 
         $servers = \is_array($servers) ? $servers : [$servers];
 
-        $this->memcached = new \Memcached('phikl');
+        $this->memcached = new \Memcached($persistentId);
         foreach ($servers as $server) {
             $this->memcached->addServer($server->host, $server->port);
         }
@@ -71,50 +73,6 @@ final class MemcachedCache implements CacheInterface
     public function clear(): bool
     {
         return $this->memcached->flush();
-    }
-
-    /**
-     * @param iterable<non-empty-string> $keys
-     *
-     * @return array<non-empty-string, Entry|null>
-     */
-    public function getMultiple(iterable $keys, mixed $default = null): array
-    {
-        $entries = [];
-        foreach ($keys as $key) {
-            $entries[$key] = $this->get($key, $default);
-        }
-
-        return $entries;
-    }
-
-    /**
-     * @param iterable<string, Entry> $values
-     */
-    public function setMultiple(iterable $values, \DateInterval|int|null $ttl = null): bool
-    {
-        foreach ($values as $key => $value) {
-            if (!$this->set($key, $value, $ttl)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param iterable<string> $keys
-     */
-    public function deleteMultiple(iterable $keys): bool
-    {
-        $success = true;
-        foreach ($keys as $key) {
-            if (!$this->delete($key)) {
-                $success = false;
-            }
-        }
-
-        return $success;
     }
 
     public function has(string $key): bool
