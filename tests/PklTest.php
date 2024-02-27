@@ -95,6 +95,10 @@ class PklTest extends TestCase
         $this->assertInstanceOf(User::class, $user);
         $this->assertSame(1, $user->id);
         $this->assertSame('John Doe', $user->name);
+        $this->assertSame('123 Main St', $user->address->street);
+        $this->assertSame('Springfield', $user->address->city);
+        $this->assertSame('IL', $user->address->state);
+        $this->assertSame('62701', $user->address->zip);
     }
 
     /**
