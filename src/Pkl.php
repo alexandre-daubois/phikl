@@ -15,11 +15,6 @@ use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * This is the main class to interact
@@ -82,14 +77,13 @@ class Pkl
             }
         }
 
-        $serializer = new Serializer([
-            new GetSetMethodNormalizer(),
-            new ObjectNormalizer(),
-            new PropertyNormalizer(),
-        ], [new JsonEncoder()]);
-
         /** @var PklModule $module */
-        $module = $serializer->deserialize($entry->content, PklModule::class, 'json');
+        $decoded = \json_decode($entry->content, true);
+        $module = new PklModule();
+        foreach ($decoded as $key => $value) {
+            $module->__set($key, $value);
+        }
+
         if ($toClass === PklModule::class) {
             return $module;
         }
