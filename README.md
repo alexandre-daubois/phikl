@@ -6,8 +6,6 @@
 Phikl (pronounced "_fickle_") is a PHP binding for Apple's PKL language. This library uses the official PKL CLI tool from Apple and
 provides a PHP interface to it.
 
-This library is still in development and is not yet ready for production use.
-
 ## Installation
 
 You can install this library using composer:
