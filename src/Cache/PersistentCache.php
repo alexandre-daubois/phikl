@@ -37,7 +37,7 @@ final class PersistentCache implements CacheInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function get(string $key, mixed $default = null): Entry|null
+    public function get(string $key, mixed $default = null): ?Entry
     {
         $entry = $this->entries[$key] ?? null;
         $isHit = $entry !== null;

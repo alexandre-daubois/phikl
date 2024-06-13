@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class PklDownloader
 {
-    private const PKL_CLI_VERSION = '0.25.2';
+    private const PKL_CLI_VERSION = '0.25.3';
 
     public function __construct()
     {
