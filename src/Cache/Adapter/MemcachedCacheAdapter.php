@@ -30,7 +30,7 @@ final class MemcachedCacheAdapter extends AbstractRemoteCacheAdapter
     /**
      * @param non-empty-string $key
      */
-    public function get(string $key, mixed $default = null): Entry|null
+    public function get(string $key, mixed $default = null): ?Entry
     {
         if ($default !== null && !$default instanceof Entry) {
             throw new \InvalidArgumentException('Default value must be null or an instance of Entry');
